@@ -6,10 +6,12 @@
     
     int colAtual = 1;
     int linha = 1;
+    int printall = 0;
 %}
 
-digit [0-9]
-leter [A-Za-z]
+digit [1-9]
+digitWZero [0-9]
+leter [A-Za-z_$]
 escape   \\[nfrt\\"]
 except    [\r\n]
 INTEGER integer
@@ -28,6 +30,8 @@ ELSE else
 
 \n { colAtual = 1; linha ++;}
 
+"//".*   {incrementCol();}
+
 "/*"   {BEGIN(COMMENT); incrementCol(); }
 <COMMENT>.  {incrementCol();}
 <COMMENT>"\n" {colAtual = 1; linha ++;}
@@ -39,26 +43,29 @@ ELSE else
 
 \"[^\\]*\\[^nfrt\\"].*\"  {find_backslash_x(yytext);  }
 
-\"[^\n\r]*\" {printf("STRLIT(%s)\n", yytext); incrementCol(); }
+\"[^\n\r]*\" {if( printall) printf("STRLIT(%s)\n", yytext); incrementCol(); }
 
 
 
 \t {;}
 
-if      { PrintMatch("IF"); incrementCol(); }
-then    { PrintMatch("THEN"); incrementCol(); }
-else    { PrintMatch("ELSE"); incrementCol(); }
-integer { PrintMatch("INTEGER"); incrementCol(); }
-double  { PrintMatch("DOUBLE"); incrementCol(); }
+if      { if( printall) PrintMatch("IF"); incrementCol(); }
+then    { if( printall) PrintMatch("THEN"); incrementCol(); }
+else    { if( printall) PrintMatch("ELSE"); incrementCol(); }
+integer { if( printall) PrintMatch("INTEGER"); incrementCol(); }
+double  { if( printall) PrintMatch("DOUBLE"); incrementCol(); }
 
-"("|")"|"*"|"+"|"-"|"/"|","|"=" { printf ("%s\n", yytext); 
+"("|")"|"*"|"+"|"-"|"/"|","|"=" {if( printall) printf ("%s\n", yytext); 
         colAtual= incrementCol() ;}
 
-{digit}+ {printf ("NATURAL(%s)\n", yytext ); incrementCol(); }
 
-{digit}*"."{digit}+ {printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+0|{digit}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("NATURAL(%s)\n", yytext ); incrementCol(); }
 
-{leter}+({leter}|{digit})* { printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
+{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?([eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})?)? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+
+{leter}+({leter}|{digit})* { if( printall) printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
 
 . { printf("Line %d, column %d: unrecognized character (%s)\n",  linha, colAtual++, yytext); }
 
@@ -85,7 +92,7 @@ char* find_backslash_x(const char *str) {
 
     while (*str) {
         if (str[0] == '\\' && (str[1] != 'n' && str[1] != 'f' && str[1] != 'r' && str[1] != 't' && str[1] != '\\' && str[1] != '"' ) ) {
-            printf("Line %d, column %d: invalid escape sequence (%.2s)\n", linha, colAtual, str);
+            if( printall) printf("Line %d, column %d: invalid escape sequence (%.2s)\n", linha, colAtual, str);
         }
         str++;
         colAtual++;
@@ -94,10 +101,15 @@ char* find_backslash_x(const char *str) {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'l' && argv[1][2] == '\0') {
+        printall = 1;
+    }
     yylex();    /* run the lexical analysis automaton */
     return 0;
 }
+
 int yywrap() {  /* called on EOF, return 1 to terminate */
     return 1;
 }
