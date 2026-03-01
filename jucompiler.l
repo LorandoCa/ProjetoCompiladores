@@ -7,6 +7,7 @@
     int colAtual = 1;
     int linha = 1;
     int printall = 0;
+    int lineBackup = 0, colBackup = 0;
 %}
 
 digit [1-9]
@@ -32,19 +33,19 @@ ELSE else
 
 "//".*   {incrementCol();}
 
-"/*"   {BEGIN(COMMENT); incrementCol(); }
+"/*"   {BEGIN(COMMENT); lineBackup = linha; colBackup = colAtual; incrementCol(); }
 <COMMENT>.  {incrementCol();}
 <COMMENT>"\n" {colAtual = 1; linha ++;}
+<COMMENT><<EOF>> { printf("Line %d, col %d: unterminated comment\n", lineBackup, colBackup); BEGIN 0; }
 <COMMENT>"*/" {BEGIN 0; incrementCol();}
 
 
-\"[^\n\r"]*{except}|\"{escape}{except}  {printf("Line %d, column %d: unterminated string literal\n", linha, colAtual); incrementCol();
+\"[^\n\r"]*{except}|\"{escape}{except}  {int aux= colAtual; find_backslash_x(yytext); colAtual = aux; printf("Line %d, col %d: unterminated string literal\n", linha, colAtual); incrementCol();
                         if ( yytext[yyleng-1] == '\n'){ linha++; colAtual=1;} }
 
-\"[^\\]*\\[^nfrt\\"].*\"  {find_backslash_x(yytext);  }
+\"[^\\\"]*\\[^nfrt\\"\n\r].*\"  {find_backslash_x(yytext); }
 
-\"[^\n\r]*\" {if( printall) printf("STRLIT(%s)\n", yytext); incrementCol(); }
-
+\"([^\\\n\r\"]|{escape})*\" {if( printall) printf("STRLIT(%s)\n", yytext); incrementCol(); }
 
 
 \t {;}
@@ -63,11 +64,13 @@ double  { if( printall) PrintMatch("DOUBLE"); incrementCol(); }
 
 {digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
 
-({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?([eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})?)? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?([eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})?)? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
 
 {leter}+({leter}|{digit})* { if( printall) printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
 
-. { printf("Line %d, column %d: unrecognized character (%s)\n",  linha, colAtual++, yytext); }
+. { printf("Line %d, col %d: illegal character (%s)\n",  linha, colAtual++, yytext); }
 
 
 
@@ -92,7 +95,10 @@ char* find_backslash_x(const char *str) {
 
     while (*str) {
         if (str[0] == '\\' && (str[1] != 'n' && str[1] != 'f' && str[1] != 'r' && str[1] != 't' && str[1] != '\\' && str[1] != '"' ) ) {
-            if( printall) printf("Line %d, column %d: invalid escape sequence (%.2s)\n", linha, colAtual, str);
+            if (str[1] == '\n'){
+                if( printall) printf("Line %d, col %d: invalid escape sequence (%.1s)\n", linha, colAtual, str);
+            }
+            else if( printall) printf("Line %d, col %d: invalid escape sequence (%.2s)\n", linha, colAtual, str);
         }
         str++;
         colAtual++;
