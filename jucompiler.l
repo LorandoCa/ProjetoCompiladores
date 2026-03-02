@@ -29,7 +29,9 @@ ELSE else
 
 " " {incrementCol();}
 
-\n { colAtual = 1; linha ++;}
+(\r\n|\n|\r) { colAtual = 1; linha ++;}
+
+\t {colAtual++;}
 
 "//".*   {incrementCol();}
 
@@ -47,8 +49,6 @@ ELSE else
 
 \"([^\\\n\r\"]|{escape})*\" {if( printall) printf("STRLIT(%s)\n", yytext); incrementCol(); }
 
-
-\t {;}
 
 if      { if( printall) PrintMatch("IF"); incrementCol(); }
 then    { if( printall) PrintMatch("THEN"); incrementCol(); }
