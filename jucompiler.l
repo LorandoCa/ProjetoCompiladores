@@ -8,8 +8,6 @@
     int linha = 1;
     int printall = 0;
     int lineBackup = 0, colBackup = 0;
-    //%X COMMENT STRING(check this, pq o meu jucompiler nao corria sem esta linha)
-
 %}
 
 digit [1-9]
@@ -32,10 +30,10 @@ ELSE else
 
 (\r\n|\n|\r) { colAtual = 1; linha ++;}
 
-\t {colAtual++;}
+\t {incrementCol();}
 
 
-"//".*   {incrementCol();}
+"//"[^\n\r]*   {incrementCol();}
 
 "/*"   {BEGIN(COMMENT); lineBackup = linha; colBackup = colAtual; incrementCol(); }
 <COMMENT>.  {incrementCol();}
@@ -52,6 +50,8 @@ ELSE else
 \"([^\\\n\r\"]|{escape})*\" {if( printall) printf("STRLIT(%s)\n", yytext); incrementCol(); }
 
 
+"++"  { if(printall) PrintMatch("RESERVED(++)"); incrementCol();}
+"--" { if(printall) PrintMatch("RESERVED(--)"); incrementCol();}
 if      { if( printall) PrintMatch("IF"); incrementCol(); }
 then    { if( printall) PrintMatch("THEN"); incrementCol(); }
 else    { if( printall) PrintMatch("ELSE"); incrementCol(); }
@@ -59,7 +59,7 @@ integer { if( printall) PrintMatch("INTEGER"); incrementCol(); }
 double  { if( printall) PrintMatch("DOUBLE"); incrementCol(); }
 "&&"  { if(printall) PrintMatch("AND"); incrementCol(); }
 "="   { if(printall) PrintMatch("ASSIGN"); incrementCol(); }
-"*"   { if(printall) PrintMatch("STAR"); incrementCol(); }
+"*"  { if(printall) PrintMatch("STAR"); incrementCol(); }
 ","   { if(printall) PrintMatch("COMMA"); incrementCol(); }
 "/"   { if(printall) PrintMatch("DIV"); incrementCol(); }
 "=="  { if(printall) PrintMatch("EQ"); incrementCol(); }
@@ -99,8 +99,6 @@ while  { if( printall) PrintMatch("WHILE"); incrementCol();}
 true|false {    if( printall) PrintMatch("BOOLIT"); incrementCol();}
 Integer {   if(printall) PrintMatch("RESERVED(Integer)"); incrementCol();}
 System  { if(printall) PrintMatch("RESERVED(System)"); incrementCol();}
-\++  { if(printall) PrintMatch("RESERVED(++)"); incrementCol();}
-\-- { if(printall) PrintMatch("RESERVED(--)"); incrementCol();}
 null { if(printall) PrintMatch("RESERVED(null)"); incrementCol();}
 
 
