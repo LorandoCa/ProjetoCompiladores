@@ -156,7 +156,7 @@ System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
 "do"           { if (printall) PrintMatch("RESERVED(do)"); incrementCol(); }
 "goto"         { if (printall) PrintMatch("RESERVED(goto)"); incrementCol(); }
 "private"      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
-
+"_"             { if (printall) PrintMatch("RESERVED(_)"); incrementCol(); }
 
 
 
