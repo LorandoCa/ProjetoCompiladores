@@ -96,7 +96,6 @@ ELSE else
 "]"   { if (printall) PrintMatch("RSQ"); incrementCol(); }
 
 if       { if (printall) PrintMatch("IF"); incrementCol(); }
-then     { if (printall) PrintMatch("THEN"); incrementCol(); }
 else     { if (printall) PrintMatch("ELSE"); incrementCol(); }
 while    { if (printall) PrintMatch("WHILE"); incrementCol(); }
 return   { if (printall) PrintMatch("RETURN"); incrementCol(); }
@@ -105,17 +104,16 @@ public   { if (printall) PrintMatch("PUBLIC"); incrementCol(); }
 class    { if (printall) PrintMatch("CLASS"); incrementCol(); }
 void     { if (printall) PrintMatch("VOID"); incrementCol(); }
 int      { if (printall) PrintMatch("INT"); incrementCol(); }
-integer  { if (printall) PrintMatch("INTEGER"); incrementCol(); }
 double   { if (printall) PrintMatch("DOUBLE"); incrementCol(); }
 boolean  { if (printall) PrintMatch("BOOL"); incrementCol(); }
 String   { if (printall) PrintMatch("STRING"); incrementCol(); }
 
-true     { if (printall) PrintMatch("BOOLLIT(true)"); incrementCol(); }
-false    { if (printall) PrintMatch("BOOLLIT(false)"); incrementCol(); }
-null     { if (printall) PrintMatch("RESERVED(null)"); incrementCol(); }
+"true"     { if (printall) PrintMatch("BOOLLIT(true)"); incrementCol(); }
+"false"    { if (printall) PrintMatch("BOOLLIT(false)"); incrementCol(); }
+"null"     { if (printall) PrintMatch("RESERVED(null)"); incrementCol(); }
 
-Integer  { if (printall) PrintMatch("RESERVED(Integer)"); incrementCol(); }
-System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
+"Integer"  { if (printall) PrintMatch("RESERVED(Integer)"); incrementCol(); }
+"System"   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
 
 "break"      { if (printall) PrintMatch("RESERVED(break)"); incrementCol(); }
 "byte"       { if (printall) PrintMatch("RESERVED(byte)"); incrementCol(); }
@@ -156,7 +154,7 @@ System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
 "do"           { if (printall) PrintMatch("RESERVED(do)"); incrementCol(); }
 "goto"         { if (printall) PrintMatch("RESERVED(goto)"); incrementCol(); }
 "private"      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
-
+"_"             { if (printall) PrintMatch("RESERVED(_)"); incrementCol(); }
 
 
 
