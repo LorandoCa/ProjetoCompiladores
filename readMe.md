@@ -14,5 +14,3 @@ Ordem de trabalho:
 4. Fazer a função de print da arvore. A funcao tem nós especificos que pode printar( verificar no enunciado do problema )
 
 5. Fazer o tratamento de erros (explicado no enunciado)
-
-6. Resolver 
