@@ -28,12 +28,11 @@ ELSE else
 
 
 " " {incrementCol();}
-
 \f {incrementCol();}
-
 (\r\n|\n|\r) { colAtual = 1; linha ++;}
-
 \t {incrementCol();}
+
+
 
 
 "//"[^\n\r]*   {incrementCol();}
@@ -43,6 +42,11 @@ ELSE else
 <COMMENT>.  {incrementCol();}
 <COMMENT><<EOF>> { if (printall || printerrors) printf("Line %d, col %d: unterminated comment\n", lineBackup, colBackup); BEGIN 0; }
 <COMMENT>"*/" {BEGIN 0; incrementCol();}
+
+
+
+
+
 
 
 \"                       { BEGIN(STRING); lineBackup = linha; colBackup = colAtual; incrementCol(); flag = 0; indice = 0; string[0]= '\0';}   /* inicia string */
@@ -63,6 +67,10 @@ ELSE else
 <STRING>\"               { BEGIN INITIAL; if (printall && flag == 0) printf("STRLIT(\"%s\")\n", string); incrementCol(); string[0] = '\0'; }/*fim da string*/
 
 <STRING>.     { copiarString(yytext); incrementCol(); }/*texto normal*/
+
+
+
+
 
 
 "System.out.print" { if (printall) PrintMatch("PRINT"); incrementCol(); }
@@ -159,6 +167,8 @@ synchronized { if (printall) PrintMatch("RESERVED(synchronized)"); incrementCol(
 do           { if (printall) PrintMatch("RESERVED(do)"); incrementCol(); }
 goto         { if (printall) PrintMatch("RESERVED(goto)"); incrementCol(); }
 private      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
+
+
 
 {leter}({leter}|{digitWZero})* { if( printall) printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
 
