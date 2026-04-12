@@ -81,6 +81,7 @@ void show(struct node *no, int depth) {
     // Pega o nome da categoria com base no índice do enum
     const char *name = names[no->category];
 
+    // Verificar se é DeclList e nao printar
     if (no->token != NULL) {
         // Substituímos %d por %s
         printf("%s(%s)\n", name, no->token);

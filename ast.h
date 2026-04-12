@@ -23,5 +23,6 @@ struct node *newnode(enum category category, char *token);
 void addchild(struct node *parent, struct node *child);
 void append(struct programs_list *programs, struct node *new_program);
 struct node *addChildren(struct programs_list *programs);
-
+void mergeChildren(struct node *parent, struct node *child);
+void addFront(struct node *parent, struct node *auxTree);
 #endif

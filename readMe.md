@@ -14,3 +14,9 @@ Ordem de trabalho:
 4. Fazer a função de print da arvore. A funcao tem nós especificos que pode printar( verificar no enunciado do problema )
 
 5. Fazer o tratamento de erros (explicado no enunciado)
+
+
+
+Desenvolvimento do 2º ponto:
+1. Falta adicionar <token> em cima
+2. <lexeme> tambem 
