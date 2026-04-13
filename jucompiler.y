@@ -3,7 +3,7 @@
 %{
 
 #include <stdio.h>
-#include "ast.h"
+#include "ast1.h"
 
 int yylex(void);
 void yyerror(char *);
@@ -14,9 +14,14 @@ struct node *ast;
 %}
 
 
-%token IF THEN ELSE
+%token CLASS LBRACE RBRACE PUBLIC STATIC SEMICOLON COMMA
+%token BOOL INT VOID STRING LPAR RPAR LSQ RSQ
+%token IF ELSE WHILE RETURN PRINT PARSEINT
+%token DOTLENGTH ASSIGN
+%token OR AND XOR EQ NE LT LE GT GE
+%token LSHIFT RSHIFT PLUS MINUS STAR DIV MOD NOT
 
-%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE
+%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT
 
 %type<node> program DeclList MethodDecl FieldDecl IdentList Type
 %type<node> MethodHeader FormalParamOpt FormalParams MethodBody
@@ -30,6 +35,9 @@ struct node *ast;
     char *lexeme;
     struct node *node;
 }
+
+
+%%
 
 
 /* Falta adicionar funcionalidade para vários programas de uma vez */
@@ -107,26 +115,26 @@ MethodHeader: Type IDENTIFIER LPAR FormalParamOpt RPAR
     ;
 
 FormalParamOpt: FormalParams        { $$ = $1; }
-              | /* vazio */         { $$ = newnode(Methodparams, NULL); }
+              | /* vazio */         { $$ = newnode(MethodParams, NULL); }
     ;
 
-FormalParams: Type IDENTIFIER       { $$ = newnode(Methodparams, NULL);
-                                      struct node *aux = newnode(Paramdecl, NULL);
+FormalParams: Type IDENTIFIER       { $$ = newnode(MethodParams, NULL);
+                                      struct node *aux = newnode(ParamDecl, NULL);
                                       addchild(aux, $1);
                                       addchild(aux, newnode(Identifier, $2));
                                       addchild($$, aux); }
 
             | FormalParams COMMA Type IDENTIFIER
                                     { $$ = $1;
-                                      struct node *aux = newnode(Paramdecl, NULL);
+                                      struct node *aux = newnode(ParamDecl, NULL);
                                       addchild(aux, $3);
                                       addchild(aux, newnode(Identifier, $4));
                                       addchild($$, aux); }
 
             | STRING LSQ RSQ IDENTIFIER
-                                    { $$ = newnode(Methodparams, NULL);
-                                      struct node *aux = newnode(Paramdecl, NULL);
-                                      addchild(aux, newnode(Stringarray, NULL));
+                                    { $$ = newnode(MethodParams, NULL);
+                                      struct node *aux = newnode(ParamDecl, NULL);
+                                      addchild(aux, newnode(StringArray, NULL));
                                       addchild(aux, newnode(Identifier, $4));
                                       addchild($$, aux); }
     ;
@@ -134,7 +142,7 @@ FormalParams: Type IDENTIFIER       { $$ = newnode(Methodparams, NULL);
 /* === CORPO DE MÉTODO === */
 MethodBody: LBRACE StmtOrVarList RBRACE
                                     {   $$ = newnode(MethodBody, NULL); 
-                                        addchild($$, $1) ; }
+                                        addchild($$, $2) ; }
     ;
 
 StmtOrVarList: StmtOrVarList Statement
@@ -148,7 +156,7 @@ StmtOrVarList: StmtOrVarList Statement
              | /* vazio */          {  }
     ;
 
-VarDecl: Type IdentList SEMICOLON   {   $$ = newnode(VarDecl, NUL);
+VarDecl: Type IdentList SEMICOLON   {   $$ = newnode(VarDecl, NULL);
                                         addchild($$, $1);
                                         addchild($$, $2);
                                         }
@@ -231,7 +239,7 @@ MatchedStmt: LBRACE StmtList RBRACE {   $$ = $2;
                                         }
            | PRINT LPAR STRLIT RPAR SEMICOLON
                                     {   $$ = newnode(Print, NULL); 
-                                        addchild($$, newnode(Strlit, STRLIT) ); 
+                                        addchild($$, newnode(Strlit, $3) ); 
                                         }
     ;
 
@@ -403,3 +411,5 @@ ArgList: Expr                       { $$ = newnode(Args, NULL);
        | ArgList COMMA Expr         { $$ = $1;
                                       addchild($$, $3); }
     ;
+
+%%

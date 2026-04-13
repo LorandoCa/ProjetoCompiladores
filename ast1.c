@@ -84,20 +84,4 @@ void addFront(struct node *parent, struct node *child){
 }
 
 
-void mergeChildren(struct node *parent, struct node *auxTree){ // Caso FieldDec: Solucao encontrada para resolver
-
-    struct node *typeChild = auxTree->children->node; // Type está aqui
-
-    struct node_list *childrenList = auxTree->children;
-
-    struct node_list *parentChildren = parent->children;
-
-    while (childrenList->next != NULL){
-        addchild(parent, childrenList->next->node); // Adicionar nó do next visto q o primeiro é o type
-        
-    }
-    
-
-}
-
 

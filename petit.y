@@ -3,7 +3,7 @@
 %{
 
 #include <stdio.h>
-#include "ast.h"
+#include "ast1.h"
 
 int yylex(void);
 void yyerror(char *);

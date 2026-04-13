@@ -19,11 +19,73 @@ int errors = 0;
 extern struct node *ast;
 extern struct programs_list *handle;
 
-const char *names[] = { 
-    "Program", "Function", "Parameters", "Parameter", "Arguments", 
-    "Integer", "Double", "Identifier", "Natural", "Decimal", 
-    "Call", "If", "Add", "Sub", "Mul", "Div" 
+static const char *category_names[] = {
+    /* Nó raiz */
+    "Program",
+
+    /* Declarações */
+    "FieldDecl",
+    "VarDecl",
+
+    /* Métodos */
+    "MethodDecl",
+    "MethodHeader",
+    "MethodParams",
+    "ParamDecl",
+    "MethodBody",
+    "Args",
+
+    /* Statements */
+    "Block",
+    "If",
+    "While",
+    "Return",
+    "Call",
+    "Print",
+    "ParseArgs",
+    "Assign",
+
+    /* Operadores binários */
+    "Or",
+    "And",
+    "Eq",
+    "Ne",
+    "Lt",
+    "Gt",
+    "Le",
+    "Ge",
+    "Add",
+    "Sub",
+    "Mul",
+    "Div",
+    "Mod",
+    "Lshift",
+    "Rshift",
+    "Xor",
+
+    /* Operadores unários */
+    "Not",
+    "Minus",
+    "Plus",
+
+    /* Outros operadores */
+    "Length",
+
+    /* Tipos */
+    "Bool",
+    "Int",
+    "Double",
+    "Void",
+    "StringArray",
+
+    /* Terminais / Literais */
+    "Boollit",
+    "Decimal",
+    "Natural",
+    "Strlit",
+    "Identifier",
 };
+
 %}
 
 %option noyywrap
@@ -40,7 +102,6 @@ letter  [a-zA-Z]
 integer                     { return INTEGER; }
 double                      { return DOUBLE; }
 if                          { return IF; }
-then                        { return THEN; }
 else                        { return ELSE; }
 {letter}({letter}|{digit})* { PASS_TOKEN(); return IDENTIFIER; }
 {digit}+                    { PASS_TOKEN(); return NATURAL; }
@@ -54,7 +115,17 @@ else                        { return ELSE; }
 
 [\t ]+                      {;}
 \n|\r|\r\n                  { lex_line++; lex_column = 1; }
-[()=,*/+-]                  { return yytext[0]; }
+
+"["                  { return LSQ; }
+"("                  { return LPAR; }
+")"                  { return RPAR; }
+"="                  { return ASSIGN; }
+","                  { return COMMA; }
+"*"                  { return STAR; }
+"/"                  { return DIV; }
+"+"                  { return PLUS; }
+"]"                  { return MINUS; }
+
 .                           { yyerror("unrecognized character"); }
 <<EOF>>                     { YY_USER_ACTION; return 0; }
 
@@ -79,7 +150,7 @@ void show(struct node *no, int depth) {
     }
 
     // Pega o nome da categoria com base no índice do enum
-    const char *name = names[no->category];
+    const char *name = category_names[no->category];
 
     // Verificar se é DeclList e nao printar
     if (no->token != NULL) {
