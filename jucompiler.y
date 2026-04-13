@@ -141,8 +141,8 @@ FormalParams: Type IDENTIFIER       { $$ = newnode(MethodParams, NULL);
 
 /* === CORPO DE MÉTODO === */
 MethodBody: LBRACE StmtOrVarList RBRACE
-                                    {   $$ = newnode(MethodBody, NULL); 
-                                        addchild($$, $2) ; }
+                                    {   $$ = $2;
+                                        }
     ;
 
 StmtOrVarList: StmtOrVarList Statement
@@ -153,7 +153,8 @@ StmtOrVarList: StmtOrVarList Statement
                                     { $$ = $1;
                                       addchild($$, $2); }
 
-             | /* vazio */          {  }
+             | /* vazio */          { $$ = newnode(MethodBody, NULL);
+                                        }
     ;
 
 VarDecl: Type IdentList SEMICOLON   {   $$ = newnode(VarDecl, NULL);
