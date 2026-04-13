@@ -56,7 +56,7 @@ DeclList: DeclList MethodDecl       { $$ = $1;
                                         struct node *aux = $2;
                                         struct node *type = aux->children->node;
                                         struct node_list *childrenList = aux->children;
-                                        while (childrenList->next != NULL){
+                                        while ( (childrenList != NULL) && (childrenList->next != NULL) ){
                                             struct node *parent = newnode(FieldDecl, NULL);
                                             addchild(parent, type);
                                             addchild(parent, childrenList->next->node); // Adicionar nó do next visto q o primeiro é o type
@@ -83,6 +83,7 @@ FieldDecl: PUBLIC STATIC Type IdentList SEMICOLON
                                         $$ = $4;
                                         addFront($$, $3); //type fica no final
                                         }
+            | error SEMICOLON  { $$ = newnode(Dummy, NULL); }
     ;
 
 IdentList: IdentList COMMA IDENTIFIER
@@ -197,6 +198,7 @@ Statement: LBRACE StmtList RBRACE   {
                                     {   $$ = newnode(Print, NULL); 
                                         addchild($$, newnode(Strlit, $3) ); 
                                         }
+          | error SEMICOLON         { $$ = newnode(Dummy, NULL) ;}
     ;
 
 StmtList: StmtList Statement        { $$ = $1;
@@ -255,6 +257,7 @@ ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                         addchild($$, newnode(Identifier, $1) );
                                        if($3 != NULL) addchild($$, $3);
                                     }
+        | IDENTIFIER LPAR error RPAR { $$ = NULL; }
         | IDENTIFIER ASSIGN Expr    {   $$ = newnode(Assign, NULL);
                                         addchild($$, newnode(Identifier, $1) );
                                         addchild($$, $3);
@@ -264,11 +267,14 @@ ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                         addchild($$, newnode(Identifier, $3) );
                                         addchild($$, $5 );
                                         }
+
+        | PARSEINT LPAR error RPAR  { $$ = newnode(Dummy, NULL); }
     ;
 
 /* === EXPRESSÕES === */
 Expr: AssignExpr                    {   $$ = $1 ;
                                         }
+          |  LPAR error RPAR               { $$ = newnode(Dummy, NULL); }
     ;
 
 AssignExpr: IDENTIFIER ASSIGN AssignExpr
@@ -390,11 +396,17 @@ PostfixExpr: IDENTIFIER DOTLENGTH   {   $$ = newnode(Length, NULL) ;
                                         addchild($$, newnode(Identifier, $1) ); 
                                         if($3 != NULL) addchild($$, $3);
                                         }
+
+           | IDENTIFIER LPAR error RPAR { $$ = newnode(Call, NULL); }
+            
            | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
                                     {   $$ = newnode(ParseArgs, NULL);
                                         addchild($$, newnode(Identifier, $3) );
                                         addchild($$, $5 );
                                         }
+           | PARSEINT LPAR error RPAR
+                                    { $$ = newnode(ParseArgs, NULL); }
+
            | LPAR Expr RPAR         {   $$ = $2; }
            | IDENTIFIER             {   $$ = newnode(Identifier, $1); }
            | NATURAL                {   $$ = newnode(Natural, $1); }

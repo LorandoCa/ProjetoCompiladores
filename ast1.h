@@ -17,6 +17,7 @@ enum category {
     MethodBody,
     //Added for support    -> Ignore them in print function 
     Args,
+    Dummy, //Added to store nodes that had errors
 
     /* Statements */
     Block,
