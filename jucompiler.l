@@ -95,12 +95,12 @@ ELSE else
 
 
 
-"System.out.print" { if (printall) PrintMatch("PRINT"); incrementCol(); }
-"Integer.parseInt"  { if (printall) PrintMatch("PARSEINT"); incrementCol(); }
-".length"           { if (printall) PrintMatch("DOTLENGTH"); incrementCol(); }
+"System.out.print" { incrementCol(); return PRINT; }
+"Integer.parseInt"  { incrementCol();  return PARSEINT;}
+".length"           {  incrementCol(); return DOTLENGTH;}
 
-"++"  { if (printall) PrintMatch("RESERVED(++)"); incrementCol(); }
-"--"  { if (printall) PrintMatch("RESERVED(--)"); incrementCol(); }
+"++"  {  incrementCol(); }
+"--"  {  incrementCol(); }
 "=="  { incrementCol(); return EQ; }
 "!="  { incrementCol(); return NE; }
 ">="  { incrementCol(); return GE; }
@@ -109,7 +109,7 @@ ELSE else
 "<<"  { incrementCol(); return LSHIFT; }
 "&&"  { incrementCol(); return AND; }
 "||"  { incrementCol(); return OR; }
-"->"  { if (printall) PrintMatch("ARROW"); incrementCol(); }
+"->"  { incrementCol(); }
 
 "="   { incrementCol(); return ASSIGN; }
 ">"   { incrementCol(); return GT; }
@@ -140,58 +140,58 @@ class    { incrementCol(); return CLASS; }
 void     { incrementCol(); return VOID; }
 int      { incrementCol(); return INT; }
 
-integer  {incrementCol(); PrintMatch("INTEGER"); return INTEGER; }
-double   {incrementCol();  PrintMatch("DOUBLE"); return DOUBLE; }
+integer  {incrementCol(); return INTEGER; }
+double   {incrementCol(); return DOUBLE; }
 
 boolean  { incrementCol(); return BOOL; }
 String   { incrementCol(); return STRING; }
 
 true     { incrementCol(); return BOOLLIT;}
 false    { incrementCol(); return BOOLLIT;}
-null     { if (printall) PrintMatch("RESERVED(null)"); incrementCol(); }
+null     { incrementCol(); }
 
-Integer  { if (printall) PrintMatch("RESERVED(Integer)"); incrementCol(); }
-System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
+Integer  { incrementCol(); }
+System   { incrementCol(); }
 
-break      { if (printall) PrintMatch("RESERVED(break)"); incrementCol(); }
-byte       { if (printall) PrintMatch("RESERVED(byte)"); incrementCol(); }
-case       { if (printall) PrintMatch("RESERVED(case)"); incrementCol(); }
-catch      { if (printall) PrintMatch("RESERVED(catch)"); incrementCol(); }
-char       { if (printall) PrintMatch("RESERVED(char)"); incrementCol(); }
-const      { if (printall) PrintMatch("RESERVED(const)"); incrementCol(); }
-enum      { if (printall) PrintMatch("RESERVED(enum)"); incrementCol(); }
-extends    { if (printall) PrintMatch("RESERVED(extends)"); incrementCol(); }
-final      { if (printall) PrintMatch("RESERVED(final)"); incrementCol(); }
-finally    { if (printall) PrintMatch("RESERVED(finally)"); incrementCol(); }
-float      { if (printall) PrintMatch("RESERVED(float)"); incrementCol(); }
-for       { if (printall) PrintMatch("RESERVED(for)"); incrementCol(); }
-implements { if (printall) PrintMatch("RESERVED(implements)"); incrementCol(); }
-import    { if (printall) PrintMatch("RESERVED(import)"); incrementCol(); }
-instanceof { if (printall) PrintMatch("RESERVED(instanceof)"); incrementCol(); }
-interface  { if (printall) PrintMatch("RESERVED(interface)"); incrementCol(); }
-long       { if (printall) PrintMatch("RESERVED(long)"); incrementCol(); }
-native     { if (printall) PrintMatch("RESERVED(native)"); incrementCol(); }
-new        { if (printall) PrintMatch("RESERVED(new)"); incrementCol(); }
-protected  { if (printall) PrintMatch("RESERVED(protected)"); incrementCol(); }
-short      { if (printall) PrintMatch("RESERVED(short)"); incrementCol(); }
-strictfp   { if (printall) PrintMatch("RESERVED(strictfp)"); incrementCol(); }
-super      { if (printall) PrintMatch("RESERVED(super)"); incrementCol(); }
-this       { if (printall) PrintMatch("RESERVED(this)"); incrementCol(); }
-throw      { if (printall) PrintMatch("RESERVED(throw)"); incrementCol(); }
-throws     { if (printall) PrintMatch("RESERVED(throws)"); incrementCol(); }
-transient  { if (printall) PrintMatch("RESERVED(transient)"); incrementCol(); }
-try        { if (printall) PrintMatch("RESERVED(try)"); incrementCol(); }
-volatile   { if (printall) PrintMatch("RESERVED(volatile)"); incrementCol(); }
-abstract     { if (printall) PrintMatch("RESERVED(abstract)"); incrementCol(); }
-continue     { if (printall) PrintMatch("RESERVED(continue)"); incrementCol(); }
-switch       { if (printall) PrintMatch("RESERVED(switch)"); incrementCol(); }
-assert       { if (printall) PrintMatch("RESERVED(assert)"); incrementCol(); }
-default      { if (printall) PrintMatch("RESERVED(default)"); incrementCol(); }
-package      { if (printall) PrintMatch("RESERVED(package)"); incrementCol(); }
-synchronized { if (printall) PrintMatch("RESERVED(synchronized)"); incrementCol(); }
-do           { if (printall) PrintMatch("RESERVED(do)"); incrementCol(); }
-goto         { if (printall) PrintMatch("RESERVED(goto)"); incrementCol(); }
-private      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
+break      { incrementCol(); }
+byte       { incrementCol(); }
+case       {incrementCol(); }
+catch      {incrementCol(); }
+char       {  incrementCol(); }
+const      {  incrementCol(); }
+enum      { incrementCol(); }
+extends    {  incrementCol(); }
+final      {  incrementCol(); }
+finally    {  incrementCol(); }
+float      {  incrementCol(); }
+for       { incrementCol(); }
+implements { incrementCol(); }
+import    { incrementCol(); }
+instanceof {  incrementCol(); }
+interface  {  incrementCol(); }
+long       { incrementCol(); }
+native     { incrementCol(); }
+new        {  incrementCol(); }
+protected  {  incrementCol(); }
+short      {  incrementCol(); }
+strictfp   { incrementCol(); }
+super      {  incrementCol(); }
+this       {  incrementCol(); }
+throw      { incrementCol(); }
+throws     { incrementCol(); }
+transient  {  incrementCol(); }
+try        {  incrementCol(); }
+volatile   {  incrementCol(); }
+abstract     {  incrementCol(); }
+continue     {  incrementCol(); }
+switch       {  incrementCol(); }
+assert       {  incrementCol(); }
+default      {  incrementCol(); }
+package      { incrementCol(); }
+synchronized {  incrementCol(); }
+do           {  incrementCol(); }
+goto         {  incrementCol(); }
+private      { incrementCol(); }
 
 
 
