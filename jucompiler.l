@@ -45,7 +45,7 @@ THEN then
 ELSE else
 
 
-%X COMMENT STRING
+%X COMMENT STRINGSTATE
 %%
 
 
@@ -71,24 +71,24 @@ ELSE else
 
 
 
-\"                       { BEGIN(STRING); lineBackup = linha; colBackup = colAtual; incrementCol(); flag = 0; indice = 0; string[0]= '\0';}   /* inicia string */
+\"                       { BEGIN(STRINGSTATE); lineBackup = linha; colBackup = colAtual; incrementCol(); flag = 0; indice = 0; string[0]= '\0';}   /* inicia string */
 
 
-<STRING>\\[nfrt\\"]      { copiarString(yytext); incrementCol(); }/*escapes validos (mais especificos)*/
+<STRINGSTATE>\\[nfrt\\"]      { copiarString(yytext); incrementCol(); }/*escapes validos (mais especificos)*/
 
-<STRING>\\[^nfrt\\"\n\r]?    { flag = 1; 
+<STRINGSTATE>\\[^nfrt\\"\n\r]?    { flag = 1; 
                             if(yytext[1] == '\n') { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, colAtual); }
                             else { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (%s)\n", linha, colAtual, yytext); }
                             incrementCol(); 
                          }/*escapes invalidos*/
 
-<STRING>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}/*newlines*/
+<STRINGSTATE>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}/*newlines*/
 
-<STRING><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}
+<STRINGSTATE><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}
 
-<STRING>\"               { BEGIN INITIAL; if (printall && flag == 0) printf("STRLIT(\"%s\")\n", string); incrementCol(); string[0] = '\0'; }/*fim da string*/
+<STRINGSTATE>\"               { BEGIN INITIAL; if (printall && flag == 0) printf("STRLIT(\"%s\")\n", string); incrementCol(); string[0] = '\0'; }/*fim da string*/
 
-<STRING>.     { copiarString(yytext); incrementCol(); }/*texto normal*/
+<STRINGSTATE>.     { copiarString(yytext); incrementCol(); }/*texto normal*/
 
 
 
@@ -101,54 +101,54 @@ ELSE else
 
 "++"  { if (printall) PrintMatch("RESERVED(++)"); incrementCol(); }
 "--"  { if (printall) PrintMatch("RESERVED(--)"); incrementCol(); }
-"=="  { if (printall) return EQ; incrementCol(); }
-"!="  { if (printall) return NE; incrementCol(); }
-">="  { if (printall) return GE; incrementCol(); }
-"<="  { if (printall) return LE; incrementCol(); }
-">>"  { if (printall) return RSHIFT; incrementCol(); }
-"<<"  { if (printall) return LSHIFT; incrementCol(); }
-"&&"  { if (printall) return AND; incrementCol(); }
-"||"  { if (printall) return OR; incrementCol(); }
-"->"  { if (printall) return ARROW; incrementCol(); }
+"=="  { if (printall) PrintMatch("EQ"); incrementCol(); return EQ; }
+"!="  { if (printall) PrintMatch("NE"); incrementCol(); return NE; }
+">="  { if (printall) PrintMatch("GE"); incrementCol(); return GE; }
+"<="  { if (printall) PrintMatch("LE"); incrementCol(); return LE; }
+">>"  { if (printall) PrintMatch("RSHIFT"); incrementCol(); return RSHIFT; }
+"<<"  { if (printall) PrintMatch("LSHIFT"); incrementCol(); return LSHIFT; }
+"&&"  { if (printall) PrintMatch("AND"); incrementCol(); return AND; }
+"||"  { if (printall) PrintMatch("OR"); incrementCol(); return OR; }
+"->"  { if (printall) PrintMatch("ARROW"); incrementCol(); }
 
-"="   { if (printall) return ASSIGN; incrementCol(); }
-">"   { if (printall) return GT; incrementCol(); }
-"<"   { if (printall) return LT; incrementCol(); }
-"+"   { if (printall) return PLUS; incrementCol(); }
-"-"   { if (printall) return MINUS; incrementCol(); }
-"*"   { if (printall) return STAR; incrementCol(); }
-"/"   { if (printall) return DIV; incrementCol(); }
-"%"   { if (printall) return MOD; incrementCol(); }
-"!"   { if (printall) return NOT; incrementCol(); }
-"^"   { if (printall) return XOR; incrementCol(); }
-","   { if (printall) return COMMA; incrementCol(); }
-";"   { if (printall) return SEMICOLON; incrementCol(); }
-"{"   { if (printall) return LBRACE; incrementCol(); }
-"}"   { if (printall) return RBRACE; incrementCol(); }
-"("   { if (printall) return LPAR; incrementCol(); }
-")"   { if (printall) return RPAR; incrementCol(); }
-"["   { if (printall) return LSQ; incrementCol(); }
-"]"   { if (printall) return RSQ; incrementCol(); }
+"="   { if (printall) PrintMatch("ASSIGN"); incrementCol(); return ASSIGN; }
+">"   { if (printall) PrintMatch("GT"); incrementCol(); return GT; }
+"<"   { if (printall) PrintMatch("LT"); incrementCol(); return LT; }
+"+"   { if (printall) PrintMatch("PLUS"); incrementCol(); return PLUS; }
+"-"   { if (printall) PrintMatch("MINUS"); incrementCol(); return MINUS; }
+"*"   { if (printall) PrintMatch("STAR"); incrementCol(); return STAR; }
+"/"   { if (printall) PrintMatch("DIV"); incrementCol(); return DIV; }
+"%"   { if (printall) PrintMatch("MOD"); incrementCol(); return MOD; }
+"!"   { if (printall) PrintMatch("NOT"); incrementCol(); return NOT; }
+"^"   { if (printall) PrintMatch("XOR"); incrementCol(); return XOR;}
+","   { if (printall) PrintMatch("COMMA"); incrementCol(); return COMMA; }
+";"   { if (printall) PrintMatch("SEMICOLON"); incrementCol(); return SEMICOLON; }
+"{"   { if (printall) PrintMatch("LBRACE"); incrementCol(); return LBRACE; }
+"}"   { if (printall) PrintMatch("RBRACE"); incrementCol(); return RBRACE; }
+"("   { if (printall) PrintMatch("LPAR"); incrementCol(); return LPAR; }
+")"   { if (printall) PrintMatch("RPAR"); incrementCol(); return RPAR; }
+"["   { if (printall) PrintMatch("LSQ"); incrementCol(); return LSQ; }
+"]"   { if (printall) PrintMatch("RSQ"); incrementCol(); return RSQ; }
 
-if       { if (printall) return IF; incrementCol(); }
-else     { if (printall) return ELSE; incrementCol(); }
-while    { if (printall) return WHILE; incrementCol(); }
-return   { if (printall) return RETURN; incrementCol(); }
-static   { if (printall) return STATIC; incrementCol(); }
-public   { if (printall) return PUBLIC; incrementCol(); }
-class    { if (printall) return CLASS; incrementCol(); }
-void     { if (printall) return VOID; incrementCol(); }
-int      { if (printall) return INT; incrementCol(); }
+if       { if (printall) PrintMatch("IF"); incrementCol();  return IF; }
+else     { if (printall) PrintMatch("ELSE"); incrementCol(); return ELSE; }
+while    { if (printall) PrintMatch("WHILE"); incrementCol(); return WHILE; }
+return   { if (printall) PrintMatch("RETURN"); incrementCol(); return RETURN;}
+static   { if (printall) PrintMatch("STATIC"); incrementCol(); return STATIC; }
+public   { if (printall) PrintMatch("PUBLIC"); incrementCol(); return PUBLIC; }
+class    { if (printall) PrintMatch("CLASS"); incrementCol(); return CLASS; }
+void     { if (printall) PrintMatch("VOID"); incrementCol(); return VOID; }
+int      { if (printall) PrintMatch("INT"); incrementCol(); return INT; }
 
-integer  {incrementCol(); return INTEGER; }
-double   {incrementCol();  return DOUBLE; }
+integer  {incrementCol(); PrintMatch("INTEGER"); return INTEGER; }
+double   {incrementCol();  PrintMatch("DOUBLE"); return DOUBLE; }
 
-boolean  { if (printall) return BOOL; incrementCol(); }
-String   { if (printall) return STRING; incrementCol(); }
+boolean  { if (printall) PrintMatch("BOOL"); incrementCol(); return BOOL; }
+String   { if (printall) PrintMatch("STRING"); incrementCol(); return STRING; }
 
-true     { if (printall) return BOOLLIT; incrementCol(); }
-false    { if (printall) return BOOLLIT; incrementCol(); }
-null     { if (printall) return RESERVED; incrementCol(); }
+true     { if (printall) PrintMatch("BOOLLIT(true)"); incrementCol(); return BOOLLIT;}
+false    { if (printall) PrintMatch("BOOLLIT(false)"); incrementCol(); return BOOLLIT;}
+null     { if (printall) PrintMatch("RESERVED"); incrementCol(); }
 
 Integer  { if (printall) PrintMatch("RESERVED(Integer)"); incrementCol(); }
 System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
