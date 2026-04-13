@@ -1,9 +1,21 @@
 %{
     /* place here any C variables and definitions */
+
+    #include "y.tab.h"
+    #include "ast.h"
+    #include <string.h>
+
     int PrintMatch( char *word); 
     int incrementCol();
     void copiarString(const char *origem);
     
+    /*igual ao petit.l:
+    guardar o lexema reconhecido em yyval */
+    #define PASS_TOKEN() yylval.lexeme = strdup(yytext)
+
+    int yyparse(void);
+    void yyerror(char *);
+
     int colAtual = 1;
     int linha = 1;
     int printall = 0;
@@ -11,6 +23,16 @@
     int lineBackup = 0, colBackup = 0;
     char string[1024];
     int indice = 0, flag = 0;
+
+    extern struct node *ast;
+    extern struct programs_list *handle;
+
+    const char *names[] = { 
+    "Program", "Function", "Parameters", "Parameter", "Arguments", 
+    "Integer", "Double", "Identifier", "Natural", "Decimal", 
+    "Call", "If", "Add", "Sub", "Mul", "Div" 
+};
+
 %}
 
 digit [1-9]
@@ -117,7 +139,10 @@ public   { if (printall) PrintMatch("PUBLIC"); incrementCol(); }
 class    { if (printall) PrintMatch("CLASS"); incrementCol(); }
 void     { if (printall) PrintMatch("VOID"); incrementCol(); }
 int      { if (printall) PrintMatch("INT"); incrementCol(); }
-double   { if (printall) PrintMatch("DOUBLE"); incrementCol(); }
+
+integer  {incrementCol(); return INTEGER; }
+double   {incrementCol();  return DOUBLE; }
+
 boolean  { if (printall) PrintMatch("BOOL"); incrementCol(); }
 String   { if (printall) PrintMatch("STRING"); incrementCol(); }
 
@@ -170,22 +195,53 @@ private      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
 
 
 
-{leter}({leter}|{digitWZero})* { if( printall) printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
+
+{leter}({leter}|{digitWZero})* { 
+    /*texto reconhecido para yylval.lexeme*/
+PASS_TOKEN();
+incrementCol();
+return IDENTIFIER;
+}
 
 
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    /*DECIMAIS*/
+    PASS_TOKEN();
+    incrementCol();
+    return DECIMAL;
+}
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?"."  {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+{digitWZero}(({digitWZero}|_)*{digitWZero})?"."  {
+    PASS_TOKEN();
+    incrementCol();
+    return DECIMAL;
+}
 
-({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?  {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?  {
+    PASS_TOKEN();
+    incrementCol();
+    return DECIMAL;
+}
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+{digitWZero}(({digitWZero}|_)*{digitWZero})?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    incrementCol();
+    return DECIMAL;
+}
 
-({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    incrementCol();
+    return DECIMAL;
+}
 
 
-0|{digit}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("NATURAL(%s)\n", yytext ); incrementCol(); }
+0|{digit}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    incrementCol();
+    return NATURAL; 
+}
 
 
 . { if (printall || printerrors) printf("Line %d, col %d: illegal character (%s)\n",  linha, colAtual++, yytext); }
@@ -206,6 +262,7 @@ int PrintMatch(char *word){
     return 0;
 }
 
+
 void copiarString(const char *origem) {
     int i = 0;
     while (yytext[i] != '\0') {  // Enquanto não chegar ao fim da string
@@ -214,6 +271,38 @@ void copiarString(const char *origem) {
         indice++;
     }
     string[indice] = '\0'; // Adiciona o terminador de string
+}
+
+void yyerror(char *s){
+    fprintf(stderr, "Syntax error: %s at line %d, col %d\n", s, linha, colAtual);
+}
+
+void show(struct node *no, int depth) {
+    if (no == NULL) {
+        return;
+    }
+
+    // Indentação
+    for (int i = 0; i < 2 * depth; i++) {
+        printf("_");
+    }
+
+    // Pega o nome da categoria com base no índice do enum
+    const char *name = names[no->category];
+
+    if (no->token != NULL) {
+        // Substituímos %d por %s
+        printf("%s(%s)\n", name, no->token);
+    } else {
+        printf("%s\n", name);
+    }
+
+    // Chamada recursiva para os filhos
+    struct node_list *atual = no->children;
+    while (atual != NULL) {
+        show(atual->node, depth + 1);
+        atual = atual->next;
+    }
 }
 
 
@@ -227,7 +316,9 @@ int main(int argc, char *argv[]) {
     } else {
         printerrors = 1;
     }
-    yylex();    /* run the lexical analysis automaton */
+    //yylex();    /* run the lexical analysis automaton */
+    yyparse();
+    show(ast, 0);
     return 0;
 }
 
