@@ -23,7 +23,7 @@ struct node *ast;
 
 %token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT
 
-%type<node> program DeclList MethodDecl FieldDecl IdentList Type
+%type<node> program DeclList MethodDecl FieldDecl IdentList IdentListVar Type
 %type<node> MethodHeader FormalParamOpt FormalParams MethodBody
 %type<node> StmtOrVarList VarDecl Statement StmtList IfStmt
 %type<node> MatchedStmt ExprOpt ExprStmt Expr AssignExpr
@@ -44,7 +44,7 @@ struct node *ast;
 
 /* === PROGRAMA === */
 program: CLASS IDENTIFIER LBRACE DeclList RBRACE
-                                    {   $$ = $4;
+                                    {   ast = $$ = $4;
                                         addFront($$, newnode(Identifier, $2) );
                                        }
     ;
@@ -54,12 +54,14 @@ DeclList: DeclList MethodDecl       { $$ = $1;
 
         | DeclList FieldDecl        {   $$ = $1;
                                         struct node *aux = $2;
-                                        struct node *type = aux->children->node;
-                                        struct node_list *childrenList = aux->children;
-                                        while ( (childrenList != NULL) && (childrenList->next != NULL) ){
+                                        int type = aux->children->node->category; // nodes type
+                                        struct node_list *childrenList = aux->children->next;
+                                        while ((childrenList != NULL) ) {
                                             struct node *parent = newnode(FieldDecl, NULL);
-                                            addchild(parent, type);
-                                            addchild(parent, childrenList->next->node); // Adicionar nó do next visto q o primeiro é o type
+                                            struct node *newtype = newnode(type , NULL); // copia o tipo
+                                            struct node *newNode = newnode( childrenList->node->category, childrenList->node->token);
+                                            addchild(parent, newtype);
+                                            addchild(parent, newNode );
                                             addchild($$, parent);
                                             childrenList = childrenList->next;
                                         }
@@ -90,7 +92,15 @@ IdentList: IdentList COMMA IDENTIFIER
                                     {   $$ = $1;
                                         addchild($$, newnode(Identifier, $3) );
                                         }
-         | IDENTIFIER               {   $$ = newnode(FieldDecl, NULL);
+         | IDENTIFIER               {   $$ = newnode(FieldDecl, NULL); // Posteriormente ignorado
+                                        addchild($$, newnode(Identifier, $1) ); }
+    ;
+
+IdentListVar: IdentListVar COMMA IDENTIFIER
+                                    {   $$ = $1;
+                                        addchild($$, newnode(Identifier, $3) );
+                                        }
+         | IDENTIFIER               {   $$ = newnode(VarDecl, NULL);
                                         addchild($$, newnode(Identifier, $1) ); }
     ;
 
@@ -151,16 +161,28 @@ StmtOrVarList: StmtOrVarList Statement
                                       addchild($$, $2); }
 
              | StmtOrVarList VarDecl
-                                    { $$ = $1;
-                                      addchild($$, $2); }
+                                    {    $$ = $1;
+                                        struct node *aux = $2;
+                                        int type = aux->children->node->category; // nodes type
+                                        struct node_list *childrenList = aux->children->next;
+                                        while ((childrenList != NULL) ) {
+                                            struct node *parent = newnode(VarDecl, NULL);
+                                            struct node *newtype = newnode(type , NULL); // copia o tipo
+                                            struct node *newNode = newnode( childrenList->node->category, childrenList->node->token);
+                                            addchild(parent, newtype);
+                                            addchild(parent, newNode );
+                                            addchild($$, parent);
+                                            childrenList = childrenList->next;
+                                        }
+                                    }
 
              | /* vazio */          { $$ = newnode(MethodBody, NULL);
                                         }
     ;
 
-VarDecl: Type IdentList SEMICOLON   {   $$ = newnode(VarDecl, NULL);
-                                        addchild($$, $1);
-                                        addchild($$, $2);
+VarDecl: Type IdentListVar SEMICOLON   {    $$ = $2;
+                                            addFront($$, $1);
+                                        
                                         }
     ;
 

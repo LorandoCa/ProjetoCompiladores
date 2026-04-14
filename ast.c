@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ast.h"
+#include "ast1.h"
 
 // create a node of a given category with a given lexical symbol
 struct node *newnode(enum category category, char *token) {
