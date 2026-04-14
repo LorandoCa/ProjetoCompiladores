@@ -1,9 +1,22 @@
 %{
     /* place here any C variables and definitions */
+
+    #include "y.tab.h"
+    #include "ast1.h"
+    #include <string.h>
+
     int PrintMatch( char *word); 
-    int incrementCol();
     void copiarString(const char *origem);
     
+    /*igual ao petit.l:
+    guardar o lexema reconhecido em yyval */
+    #define PASS_TOKEN() yylval.lexeme = strdup(yytext)
+
+
+
+    int yyparse(void);
+    void yyerror(char *);
+
     int colAtual = 1;
     int linha = 1;
     int printall = 0;
@@ -11,6 +24,85 @@
     int lineBackup = 0, colBackup = 0;
     char string[1024];
     int indice = 0, flag = 0;
+    
+    int syn_line = -1, syn_column = -1;
+    int errors = 0;
+
+    #define YY_USER_ACTION { syn_line = linha; syn_column = colAtual; colAtual += yyleng; }
+
+
+    extern struct node *ast;
+    extern struct programs_list *handle;
+
+static const char *category_names[] = {
+    /* Nó raiz */
+    "Program",
+
+    /* Declarações */
+    "FieldDecl",
+    "VarDecl",
+
+    /* Métodos */
+    "MethodDecl",
+    "MethodHeader",
+    "MethodParams",
+    "ParamDecl",
+    "MethodBody",
+    "Args",
+    "Dummy", //Added to store nodes that had errors
+
+    /* Statements */
+    "Block",
+    "If",
+    "While",
+    "Return",
+    "Call",
+    "Print",
+    "ParseArgs",
+    "Assign",
+
+    /* Operadores binários */
+    "Or",
+    "And",
+    "Eq",
+    "Ne",
+    "Lt",
+    "Gt",
+    "Le",
+    "Ge",
+    "Add",
+    "Sub",
+    "Mul",
+    "Div",
+    "Mod",
+    "Lshift",
+    "Rshift",
+    "Xor",
+
+    /* Operadores unários */
+    "Not",
+    "Minus",
+    "Plus",
+
+    /* Outros operadores */
+    "Length",
+
+    /* Tipos */
+    "Bool",
+    "Int",
+    "Double",
+    "Void",
+    "StringArray",
+
+    /* Terminais / Literais */
+    "Boollit",
+    "Decimal",
+    "Natural",
+    "Strlit",
+    "Identifier",
+};
+
+
 %}
 
 digit [1-9]
@@ -23,25 +115,25 @@ THEN then
 ELSE else
 
 
-%X COMMENT STRING
+%X COMMENT STRINGSTATE
 %%
 
 
-" " {incrementCol();}
-\f {incrementCol();}
+" " {}
+\f {}
 (\r\n|\n|\r) { colAtual = 1; linha ++;}
-\t {incrementCol();}
+\t {}
 
 
 
 
-"//"[^\n\r]*   {incrementCol();}
+"//"[^\n\r]*   {}
 
-"/*"   {BEGIN(COMMENT); lineBackup = linha; colBackup = colAtual; incrementCol(); }
+"/*"   {BEGIN(COMMENT); lineBackup = linha; colBackup = colAtual;  }
 <COMMENT>(\r\n|\n|\r) {colAtual = 1; linha ++;}
-<COMMENT>.  {incrementCol();}
+<COMMENT>.  {}
 <COMMENT><<EOF>> { if (printall || printerrors) printf("Line %d, col %d: unterminated comment\n", lineBackup, colBackup); BEGIN 0; }
-<COMMENT>"*/" {BEGIN 0; incrementCol();}
+<COMMENT>"*/" {BEGIN 0; }
 
 
 
@@ -49,146 +141,192 @@ ELSE else
 
 
 
-\"                       { BEGIN(STRING); lineBackup = linha; colBackup = colAtual; incrementCol(); flag = 0; indice = 0; string[0]= '\0';}   /* inicia string */
+\"                       { BEGIN(STRINGSTATE); lineBackup = linha; colBackup = syn_column;  flag = 0; indice = 0; string[0]= '\0'; yymore();}   /* inicia string */
 
 
-<STRING>\\[nfrt\\"]      { copiarString(yytext); incrementCol(); }/*escapes validos (mais especificos)*/
+<STRINGSTATE>\\[nfrt\\"]      { copiarString(yytext);  }/*escapes validos (mais especificos)*/
 
-<STRING>\\[^nfrt\\"\n\r]?    { flag = 1; 
-                            if(yytext[1] == '\n') { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, colAtual); }
-                            else { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (%s)\n", linha, colAtual, yytext); }
-                            incrementCol(); 
+<STRINGSTATE>\\[^nfrt\\"\n\r]?    { flag = 1; 
+                            if(yytext[1] == '\n') { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, syn_column); }
+                            else { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (%s)\n", linha, syn_column, yytext); }
+                             
                          }/*escapes invalidos*/
 
-<STRING>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}/*newlines*/
+<STRINGSTATE>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}/*newlines*/
 
-<STRING><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}
+<STRINGSTATE><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}
 
-<STRING>\"               { BEGIN INITIAL; if (printall && flag == 0) printf("STRLIT(\"%s\")\n", string); incrementCol(); string[0] = '\0'; }/*fim da string*/
+<STRINGSTATE>\" { 
+    BEGIN INITIAL; 
+    if (flag == 0) {
+        if (printall) printf("STRLIT(\"%s\")\n", string);
 
-<STRING>.     { copiarString(yytext); incrementCol(); }/*texto normal*/
+        syn_column = colBackup;
 
+        yylval.lexeme = strdup(string); 
 
+        return STRLIT; 
+    } 
+    string[0] = '\0'; 
+}
 
-
-
-
-"System.out.print" { if (printall) PrintMatch("PRINT"); incrementCol(); }
-"Integer.parseInt"  { if (printall) PrintMatch("PARSEINT"); incrementCol(); }
-".length"           { if (printall) PrintMatch("DOTLENGTH"); incrementCol(); }
-
-"++"  { if (printall) PrintMatch("RESERVED(++)"); incrementCol(); }
-"--"  { if (printall) PrintMatch("RESERVED(--)"); incrementCol(); }
-"=="  { if (printall) PrintMatch("EQ"); incrementCol(); }
-"!="  { if (printall) PrintMatch("NE"); incrementCol(); }
-">="  { if (printall) PrintMatch("GE"); incrementCol(); }
-"<="  { if (printall) PrintMatch("LE"); incrementCol(); }
-">>"  { if (printall) PrintMatch("RSHIFT"); incrementCol(); }
-"<<"  { if (printall) PrintMatch("LSHIFT"); incrementCol(); }
-"&&"  { if (printall) PrintMatch("AND"); incrementCol(); }
-"||"  { if (printall) PrintMatch("OR"); incrementCol(); }
-"->"  { if (printall) PrintMatch("ARROW"); incrementCol(); }
-
-"="   { if (printall) PrintMatch("ASSIGN"); incrementCol(); }
-">"   { if (printall) PrintMatch("GT"); incrementCol(); }
-"<"   { if (printall) PrintMatch("LT"); incrementCol(); }
-"+"   { if (printall) PrintMatch("PLUS"); incrementCol(); }
-"-"   { if (printall) PrintMatch("MINUS"); incrementCol(); }
-"*"   { if (printall) PrintMatch("STAR"); incrementCol(); }
-"/"   { if (printall) PrintMatch("DIV"); incrementCol(); }
-"%"   { if (printall) PrintMatch("MOD"); incrementCol(); }
-"!"   { if (printall) PrintMatch("NOT"); incrementCol(); }
-"^"   { if (printall) PrintMatch("XOR"); incrementCol(); }
-","   { if (printall) PrintMatch("COMMA"); incrementCol(); }
-";"   { if (printall) PrintMatch("SEMICOLON"); incrementCol(); }
-"{"   { if (printall) PrintMatch("LBRACE"); incrementCol(); }
-"}"   { if (printall) PrintMatch("RBRACE"); incrementCol(); }
-"("   { if (printall) PrintMatch("LPAR"); incrementCol(); }
-")"   { if (printall) PrintMatch("RPAR"); incrementCol(); }
-"["   { if (printall) PrintMatch("LSQ"); incrementCol(); }
-"]"   { if (printall) PrintMatch("RSQ"); incrementCol(); }
-
-if       { if (printall) PrintMatch("IF"); incrementCol(); }
-else     { if (printall) PrintMatch("ELSE"); incrementCol(); }
-while    { if (printall) PrintMatch("WHILE"); incrementCol(); }
-return   { if (printall) PrintMatch("RETURN"); incrementCol(); }
-static   { if (printall) PrintMatch("STATIC"); incrementCol(); }
-public   { if (printall) PrintMatch("PUBLIC"); incrementCol(); }
-class    { if (printall) PrintMatch("CLASS"); incrementCol(); }
-void     { if (printall) PrintMatch("VOID"); incrementCol(); }
-int      { if (printall) PrintMatch("INT"); incrementCol(); }
-double   { if (printall) PrintMatch("DOUBLE"); incrementCol(); }
-boolean  { if (printall) PrintMatch("BOOL"); incrementCol(); }
-String   { if (printall) PrintMatch("STRING"); incrementCol(); }
-
-true     { if (printall) PrintMatch("BOOLLIT(true)"); incrementCol(); }
-false    { if (printall) PrintMatch("BOOLLIT(false)"); incrementCol(); }
-null     { if (printall) PrintMatch("RESERVED(null)"); incrementCol(); }
-
-Integer  { if (printall) PrintMatch("RESERVED(Integer)"); incrementCol(); }
-System   { if (printall) PrintMatch("RESERVED(System)"); incrementCol(); }
-
-break      { if (printall) PrintMatch("RESERVED(break)"); incrementCol(); }
-byte       { if (printall) PrintMatch("RESERVED(byte)"); incrementCol(); }
-case       { if (printall) PrintMatch("RESERVED(case)"); incrementCol(); }
-catch      { if (printall) PrintMatch("RESERVED(catch)"); incrementCol(); }
-char       { if (printall) PrintMatch("RESERVED(char)"); incrementCol(); }
-const      { if (printall) PrintMatch("RESERVED(const)"); incrementCol(); }
-enum      { if (printall) PrintMatch("RESERVED(enum)"); incrementCol(); }
-extends    { if (printall) PrintMatch("RESERVED(extends)"); incrementCol(); }
-final      { if (printall) PrintMatch("RESERVED(final)"); incrementCol(); }
-finally    { if (printall) PrintMatch("RESERVED(finally)"); incrementCol(); }
-float      { if (printall) PrintMatch("RESERVED(float)"); incrementCol(); }
-for       { if (printall) PrintMatch("RESERVED(for)"); incrementCol(); }
-implements { if (printall) PrintMatch("RESERVED(implements)"); incrementCol(); }
-import    { if (printall) PrintMatch("RESERVED(import)"); incrementCol(); }
-instanceof { if (printall) PrintMatch("RESERVED(instanceof)"); incrementCol(); }
-interface  { if (printall) PrintMatch("RESERVED(interface)"); incrementCol(); }
-long       { if (printall) PrintMatch("RESERVED(long)"); incrementCol(); }
-native     { if (printall) PrintMatch("RESERVED(native)"); incrementCol(); }
-new        { if (printall) PrintMatch("RESERVED(new)"); incrementCol(); }
-protected  { if (printall) PrintMatch("RESERVED(protected)"); incrementCol(); }
-short      { if (printall) PrintMatch("RESERVED(short)"); incrementCol(); }
-strictfp   { if (printall) PrintMatch("RESERVED(strictfp)"); incrementCol(); }
-super      { if (printall) PrintMatch("RESERVED(super)"); incrementCol(); }
-this       { if (printall) PrintMatch("RESERVED(this)"); incrementCol(); }
-throw      { if (printall) PrintMatch("RESERVED(throw)"); incrementCol(); }
-throws     { if (printall) PrintMatch("RESERVED(throws)"); incrementCol(); }
-transient  { if (printall) PrintMatch("RESERVED(transient)"); incrementCol(); }
-try        { if (printall) PrintMatch("RESERVED(try)"); incrementCol(); }
-volatile   { if (printall) PrintMatch("RESERVED(volatile)"); incrementCol(); }
-abstract     { if (printall) PrintMatch("RESERVED(abstract)"); incrementCol(); }
-continue     { if (printall) PrintMatch("RESERVED(continue)"); incrementCol(); }
-switch       { if (printall) PrintMatch("RESERVED(switch)"); incrementCol(); }
-assert       { if (printall) PrintMatch("RESERVED(assert)"); incrementCol(); }
-default      { if (printall) PrintMatch("RESERVED(default)"); incrementCol(); }
-package      { if (printall) PrintMatch("RESERVED(package)"); incrementCol(); }
-synchronized { if (printall) PrintMatch("RESERVED(synchronized)"); incrementCol(); }
-do           { if (printall) PrintMatch("RESERVED(do)"); incrementCol(); }
-goto         { if (printall) PrintMatch("RESERVED(goto)"); incrementCol(); }
-private      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
+<STRINGSTATE>.     { copiarString(yytext); yymore(); }/*texto normal*/
 
 
 
-{leter}({leter}|{digitWZero})* { if( printall) printf ("IDENTIFIER(%s)\n", yytext); incrementCol(); }
 
 
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+"System.out.print" {  return PRINT; }
+"Integer.parseInt"  {   return PARSEINT;}
+".length"           {   return DOTLENGTH;}
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?"."  {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+"++"  {   }
+"--"  {   }
+"=="  {  return EQ; }
+"!="  {  return NE; }
+">="  {  return GE; }
+"<="  {  return LE; }
+">>"  {  return RSHIFT; }
+"<<"  {  return LSHIFT; }
+"&&"  {  return AND; }
+"||"  {  return OR; }
+"->"  {  }
 
-({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?  {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+"="   {  return ASSIGN; }
+">"   {  return GT; }
+"<"   {  return LT; }
+"+"   {  return PLUS; }
+"-"   {  return MINUS; }
+"*"   {  return STAR; }
+"/"   {  return DIV; }
+"%"   {  return MOD; }
+"!"   {  return NOT; }
+"^"   {  return XOR;}
+","   {  return COMMA; }
+";"   {  return SEMICOLON; }
+"{"   {  return LBRACE; }
+"}"   {  return RBRACE; }
+"("   {  return LPAR; }
+")"   {  return RPAR; }
+"["   {  return LSQ; }
+"]"   {  return RSQ; }
 
-{digitWZero}(({digitWZero}|_)*{digitWZero})?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+if       {   return IF; }
+else     {  return ELSE; }
+while    {  return WHILE; }
+return   {  return RETURN;}
+static   {  return STATIC; }
+public   {  return PUBLIC; }
+class    {  return CLASS; }
+void     {  return VOID; }
+int      {  return INT; }
 
-({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("DECIMAL(%s)\n", yytext); incrementCol();}
+integer  { return INTEGER; }
+double   { return DOUBLE; }
+
+boolean  {  return BOOL; }
+String   {  return STRING; }
+
+true     {  return BOOLLIT;}
+false    {  return BOOLLIT;}
+null     {  }
+
+Integer  {  }
+System   {  }
+
+break      {  }
+byte       {  }
+case       { }
+catch      { }
+char       {   }
+const      {   }
+enum      {  }
+extends    {   }
+final      {   }
+finally    {   }
+float      {   }
+for       {  }
+implements {  }
+import    {  }
+instanceof {   }
+interface  {   }
+long       {  }
+native     {  }
+new        {   }
+protected  {   }
+short      {   }
+strictfp   {  }
+super      {   }
+this       {   }
+throw      {  }
+throws     {  }
+transient  {   }
+try        {   }
+volatile   {   }
+abstract     {   }
+continue     {   }
+switch       {   }
+assert       {   }
+default      {   }
+package      {  }
+synchronized {   }
+do           {   }
+goto         {   }
+private      {  }
 
 
-0|{digit}(({digitWZero}|_)*{digitWZero})? {if( printall) printf ("NATURAL(%s)\n", yytext ); incrementCol(); }
 
 
-. { if (printall || printerrors) printf("Line %d, col %d: illegal character (%s)\n",  linha, colAtual++, yytext); }
+{leter}({leter}|{digitWZero})* { 
+    /*texto reconhecido para yylval.lexeme*/
+PASS_TOKEN();
+
+return IDENTIFIER;
+}
+
+
+
+{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    /*DECIMAIS*/
+    PASS_TOKEN();
+    
+    return DECIMAL;
+}
+
+{digitWZero}(({digitWZero}|_)*{digitWZero})?"."  {
+    PASS_TOKEN();
+    
+    return DECIMAL;
+}
+
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?  {
+    PASS_TOKEN();
+    
+    return DECIMAL;
+}
+
+{digitWZero}(({digitWZero}|_)*{digitWZero})?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    
+    return DECIMAL;
+}
+
+({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    
+    return DECIMAL;
+}
+
+
+0|{digit}(({digitWZero}|_)*{digitWZero})? {
+    PASS_TOKEN();
+    
+    return NATURAL; 
+}
+
+
+. { if (printall || printerrors) printf("Line %d, col %d: illegal character (%s)\n",  linha, syn_column, yytext); }
 
 
 
@@ -196,15 +334,12 @@ private      { if (printall) PrintMatch("RESERVED(private)"); incrementCol(); }
 
 #include <stdio.h>
 
-int incrementCol(){
-    colAtual+= yyleng;
-    return colAtual;
-}
 
 int PrintMatch(char *word){
     printf("%s\n", word);
     return 0;
 }
+
 
 void copiarString(const char *origem) {
     int i = 0;
@@ -214,6 +349,43 @@ void copiarString(const char *origem) {
         indice++;
     }
     string[indice] = '\0'; // Adiciona o terminador de string
+}
+
+void yyerror (char *s) {
+    printf ("Line %d, col %d: %s: %s\n", syn_line, syn_column, s, yytext);
+    errors++;
+}
+
+void show(struct node *no, int depth) {
+    if (no == NULL) {
+        return;
+    }
+
+    // Pega o nome da categoria com base no índice do enum
+    const char *name = category_names[no->category];
+        
+    if(strcmp(name, "Args") != 0 ) {
+        // Indentação
+        for (int i = 0; i < 2 * depth; i++) {
+            printf(".");
+        }
+
+    
+        depth = depth + 1;
+        if ( (no->token != NULL) ) {
+            // Substituímos %d por %s
+            printf("%s(%s)\n", name, no->token);
+        } else {
+            printf("%s\n", name);
+        }
+    }
+
+    // Chamada recursiva para os filhos
+    struct node_list *atual = no->children;
+    while (atual != NULL) {
+        show(atual->node, depth);
+        atual = atual->next;
+    }
 }
 
 
@@ -227,7 +399,13 @@ int main(int argc, char *argv[]) {
     } else {
         printerrors = 1;
     }
-    yylex();    /* run the lexical analysis automaton */
+
+    //yylex();    /* run the lexical analysis automaton */
+
+    yyparse();
+
+    if(errors == 0)
+        show(ast, 0);
     return 0;
 }
 
