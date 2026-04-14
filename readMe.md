@@ -18,5 +18,4 @@ Ordem de trabalho:
 
 
 Desenvolvimento do 2º ponto:
-1. Falta adicionar <token> em cima
-2. <lexeme> tambem 
+1. Falta adicionar a funcao yyerror, e o calculo de slinha e scoluna (Linha e coluna atual da analise sintatica)
