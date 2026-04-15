@@ -18,4 +18,13 @@ Ordem de trabalho:
 
 
 Desenvolvimento do 2º ponto:
-1. Falta adicionar a funcao yyerror, e o calculo de slinha e scoluna (Linha e coluna atual da analise sintatica)
+1. Falta:::
+O analisador deverá chamar-se jucompiler, ler o ficheiro a processar através do stdin e emitir
+todos os resultados para o stdout. Quando invocado com a <<opção -t>> deve imprimir a árvore de
+sintaxe tal como se especifica nas secções que se seguem. Se invocado com a <<opção -e2>> deve
+escrever no stdout apenas as mensagens de erro relativas aos erros sintáticos e lexicais.
+Para manter a compatibilidade com a fase anterior, se o analisador for invocado com uma
+das <<opções -l>> ou << -e1 >> deverá apenas realizar a análise lexical, emitir o resultado para o stdout
+(erros lexicais e no caso da <<opção -l>> também os tokens encontrados) e terminar. Se não for
+passada qualquer opção, o analisador deve apenas escrever no stdout as mensagens de erro
+correspondentes aos erros lexicais e de sintaxe.

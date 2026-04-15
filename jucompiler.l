@@ -6,7 +6,7 @@
     #include <string.h>
 
     int PrintMatch( char *word); 
-    void copiarString(const char *origem);
+    void copiarString(const char origem);
     
     /*igual ao petit.l:
     guardar o lexema reconhecido em yyval */
@@ -129,9 +129,9 @@ ELSE else
 
 "//"[^\n\r]*   {}
 
-"/*"   {BEGIN(COMMENT); lineBackup = linha; colBackup = colAtual;  }
+"/*"   {BEGIN(COMMENT); lineBackup = syn_line; colBackup = syn_column;  }
 <COMMENT>(\r\n|\n|\r) {colAtual = 1; linha ++;}
-<COMMENT>.  {}
+<COMMENT>.  {syn_column++;}
 <COMMENT><<EOF>> { if (printall || printerrors) printf("Line %d, col %d: unterminated comment\n", lineBackup, colBackup); BEGIN 0; }
 <COMMENT>"*/" {BEGIN 0; }
 
@@ -144,7 +144,7 @@ ELSE else
 \"                       { BEGIN(STRINGSTATE); lineBackup = linha; colBackup = syn_column;  flag = 0; indice = 0; string[0]= '\0'; yymore();}   /* inicia string */
 
 
-<STRINGSTATE>\\[nfrt\\"]      { copiarString(yytext);  }/*escapes validos (mais especificos)*/
+<STRINGSTATE>\\[nfrt\\"]      { copiarString(yytext[yyleng-1]);  }/*escapes validos (mais especificos)*/
 
 <STRINGSTATE>\\[^nfrt\\"\n\r]?    { flag = 1; 
                             if(yytext[1] == '\n') { if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, syn_column); }
@@ -152,9 +152,16 @@ ELSE else
                              
                          }/*escapes invalidos*/
 
-<STRINGSTATE>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}/*newlines*/
+<STRINGSTATE>(\r\n|\n|\r)   { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); 
+                                colAtual = 1; linha ++; string[0] = '\0';
+                                syn_column = colBackup;
+                                syn_line = lineBackup;
+                            }/*newlines*/
 
-<STRINGSTATE><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); colAtual = 1; linha ++; string[0] = '\0';}
+<STRINGSTATE><<EOF>>          {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); 
+                                syn_column = colBackup;
+                                syn_line = lineBackup;
+                                colAtual = 1; linha ++; string[0] = '\0';}
 
 <STRINGSTATE>\" { 
     BEGIN INITIAL; 
@@ -162,6 +169,7 @@ ELSE else
         if (printall) printf("STRLIT(\"%s\")\n", string);
 
         syn_column = colBackup;
+        syn_line = lineBackup;
 
         yylval.lexeme = strdup(string); 
 
@@ -170,7 +178,7 @@ ELSE else
     string[0] = '\0'; 
 }
 
-<STRINGSTATE>.     { copiarString(yytext); yymore(); }/*texto normal*/
+<STRINGSTATE>.     { copiarString(yytext[yyleng-1]); yymore(); }/*texto normal*/
 
 
 
@@ -181,8 +189,7 @@ ELSE else
 "Integer.parseInt"  {   return PARSEINT;}
 ".length"           {   return DOTLENGTH;}
 
-"++"  {   }
-"--"  {   }
+
 "=="  {  return EQ; }
 "!="  {  return NE; }
 ">="  {  return GE; }
@@ -191,7 +198,7 @@ ELSE else
 "<<"  {  return LSHIFT; }
 "&&"  {  return AND; }
 "||"  {  return OR; }
-"->"  {  }
+
 
 "="   {  return ASSIGN; }
 ">"   {  return GT; }
@@ -230,51 +237,6 @@ String   {  return STRING; }
 
 true     {  return BOOLLIT;}
 false    {  return BOOLLIT;}
-null     {  }
-
-Integer  {  }
-System   {  }
-
-break      {  }
-byte       {  }
-case       { }
-catch      { }
-char       {   }
-const      {   }
-enum      {  }
-extends    {   }
-final      {   }
-finally    {   }
-float      {   }
-for       {  }
-implements {  }
-import    {  }
-instanceof {   }
-interface  {   }
-long       {  }
-native     {  }
-new        {   }
-protected  {   }
-short      {   }
-strictfp   {  }
-super      {   }
-this       {   }
-throw      {  }
-throws     {  }
-transient  {   }
-try        {   }
-volatile   {   }
-abstract     {   }
-continue     {   }
-switch       {   }
-assert       {   }
-default      {   }
-package      {  }
-synchronized {   }
-do           {   }
-goto         {   }
-private      {  }
-
 
 
 
@@ -341,13 +303,9 @@ int PrintMatch(char *word){
 }
 
 
-void copiarString(const char *origem) {
-    int i = 0;
-    while (yytext[i] != '\0') {  // Enquanto não chegar ao fim da string
-        string[indice] = yytext[i];  // Copia caractere por caractere
-        i++;
-        indice++;
-    }
+void copiarString(const char origem) {
+    string[indice] = origem;  // Copia caractere por caractere
+    indice++;
     string[indice] = '\0'; // Adiciona o terminador de string
 }
 
@@ -364,7 +322,7 @@ void show(struct node *no, int depth) {
     // Pega o nome da categoria com base no índice do enum
     const char *name = category_names[no->category];
         
-    if(strcmp(name, "Args") != 0 ) {
+    if(strcmp(name, "Args") != 0 && strcmp(name, "Dummy" ) != 0) {
         // Indentação
         for (int i = 0; i < 2 * depth; i++) {
             printf(".");
@@ -392,19 +350,29 @@ void show(struct node *no, int depth) {
 
 int main(int argc, char *argv[]) {
 
+    int printTree = 0;
+    int syntatic_analisis = 0;
+
     if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'l' && argv[1][2] == '\0') {
         printall = 1;
+        syntatic_analisis = 1;
     } else if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'e' && argv[1][2] == '1' && argv[1][3] == '\0') {
+        printerrors = 1;
+    }else if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 't' && argv[1][2] == '\0'){
+        printTree = 1;
+    }else if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'e' && argv[1][2] == '2' && argv[1][3] == '\0'){
         printerrors = 1;
     } else {
         printerrors = 1;
     }
 
-    //yylex();    /* run the lexical analysis automaton */
 
-    yyparse();
+    if (syntatic_analisis)
+        yylex();    /* run the lexical analysis automaton */
+    else
+        yyparse();
 
-    if(errors == 0)
+    if(errors == 0 && printTree)
         show(ast, 0);
     return 0;
 }
