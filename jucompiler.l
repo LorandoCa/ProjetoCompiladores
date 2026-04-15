@@ -243,7 +243,7 @@ false    {  return BOOLLIT;}
 {leter}({leter}|{digitWZero})* { 
     /*texto reconhecido para yylval.lexeme*/
 PASS_TOKEN();
-
+if( printall) printf ("IDENTIFIER(%s)\n", yytext);
 return IDENTIFIER;
 }
 
@@ -252,38 +252,38 @@ return IDENTIFIER;
 {digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
     /*DECIMAIS*/
     PASS_TOKEN();
-    
+    if( printall) printf ("DECIMAL(%s)\n", yytext);
     return DECIMAL;
 }
 
 {digitWZero}(({digitWZero}|_)*{digitWZero})?"."  {
     PASS_TOKEN();
-    
+    if( printall) printf ("DECIMAL(%s)\n", yytext);
     return DECIMAL;
 }
 
 ({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?  {
     PASS_TOKEN();
-    
+    if( printall) printf ("DECIMAL(%s)\n", yytext);
     return DECIMAL;
 }
 
 {digitWZero}(({digitWZero}|_)*{digitWZero})?"."({digitWZero}(({digitWZero}|_)*{digitWZero})?)?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
     PASS_TOKEN();
-    
+    if( printall) printf ("DECIMAL(%s)\n", yytext);
     return DECIMAL;
 }
 
 ({digitWZero}(({digitWZero}|_)*{digitWZero})?)?"."{digitWZero}(({digitWZero}|_)*{digitWZero})?[eE][+-]?{digitWZero}(({digitWZero}|_)*{digitWZero})? {
     PASS_TOKEN();
-    
+    if( printall) printf ("DECIMAL(%s)\n", yytext);
     return DECIMAL;
 }
 
 
 0|{digit}(({digitWZero}|_)*{digitWZero})? {
     PASS_TOKEN();
-    
+    if( printall) printf ("NATURAL(%s)\n", yytext);
     return NATURAL; 
 }
 
