@@ -367,8 +367,9 @@ int main(int argc, char *argv[]) {
     }
 
 
-    if (syntatic_analisis)
-        yylex();    /* run the lexical analysis automaton */
+    if (syntatic_analisis) {
+        while (yylex() != 0);  /* 0 = EOF */
+    }
     else
         yyparse();
 
