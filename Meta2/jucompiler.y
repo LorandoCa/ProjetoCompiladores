@@ -25,7 +25,7 @@ struct node *ast;
 %token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT
 
 %type<node> program DeclList MethodDecl FieldDecl IdentList IdentListVar Type
-%type<node> MethodHeader FormalParamOpt FormalParams MethodBody
+%type<node> MethodHeader FormalParamOpt FormalParams NormalParams MethodBody
 %type<node> StmtOrVarList VarDecl Statement StmtList IfStmt
 %type<node> ExprOpt ExprStmt Expr AssignExpr
 %type<node> OrExpr AndExpr XorExpr EqExpr RelExpr ShiftExpr
@@ -137,27 +137,29 @@ FormalParamOpt: FormalParams        { $$ = $1; }
               | /* vazio */         { $$ = newnode(MethodParams, NULL); }
     ;
 
-FormalParams: Type IDENTIFIER       { $$ = newnode(MethodParams, NULL);
-                                      struct node *aux = newnode(ParamDecl, NULL);
-                                      addchild(aux, $1);
-                                      addchild(aux, newnode(Identifier, $2));
-                                      addchild($$, aux); }
-
-            | FormalParams COMMA Type IDENTIFIER
-                                    { $$ = $1;
-                                      struct node *aux = newnode(ParamDecl, NULL);
-                                      addchild(aux, $3);
-                                      addchild(aux, newnode(Identifier, $4));
-                                      addchild($$, aux); }
-
+FormalParams: NormalParams          { $$ = $1; }
             | STRING LSQ RSQ IDENTIFIER
-                                    { $$ = newnode(MethodParams, NULL);
-                                      struct node *aux = newnode(ParamDecl, NULL);
-                                      addchild(aux, newnode(StringArray, NULL));
-                                      addchild(aux, newnode(Identifier, $4));
-                                      addchild($$, aux); }
+                { $$ = newnode(MethodParams, NULL);
+                  struct node *aux = newnode(ParamDecl, NULL);
+                  addchild(aux, newnode(StringArray, NULL));
+                  addchild(aux, newnode(Identifier, $4));
+                  addchild($$, aux); }
     ;
 
+NormalParams: Type IDENTIFIER
+                { $$ = newnode(MethodParams, NULL);
+                  struct node *aux = newnode(ParamDecl, NULL);
+                  addchild(aux, $1);
+                  addchild(aux, newnode(Identifier, $2));
+                  addchild($$, aux); }
+
+            | NormalParams COMMA Type IDENTIFIER
+                { $$ = $1;
+                  struct node *aux = newnode(ParamDecl, NULL);
+                  addchild(aux, $3);
+                  addchild(aux, newnode(Identifier, $4));
+                  addchild($$, aux); }
+    ;
 /* === CORPO DE MÉTODO === */
 MethodBody: LBRACE StmtOrVarList RBRACE
                                     {   $$ = $2;
@@ -287,8 +289,6 @@ ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                         addchild($$, newnode(Identifier, $3) );
                                         addchild($$, $5 );
                                         }
-
-        | PARSEINT LPAR error RPAR  { $$ = newnode(Dummy, NULL); }
     ;
 
 /* === EXPRESSÕES === */

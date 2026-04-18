@@ -6,7 +6,7 @@
     #include <string.h>
 
     int PrintMatch( char *word); 
-    void copiarString(const char origem);
+    void copiarString(char origem);
     
     /*igual ao petit.l:
     guardar o lexema reconhecido em yyval */
@@ -23,6 +23,7 @@
     int printerrors = 0;
     int lineBackup = 0, colBackup = 0;
     char string[1024];
+    char buffer[1024 + 3];
     int indice = 0, flag = 0;
     
     int syn_line = -1, syn_column = -1;
@@ -167,7 +168,7 @@ ELSE else
                                 if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, syn_column); 
                                 colAtual += 1;
                             } else { 
-                                if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (%c%c)\n", linha, syn_column, yytext[yyleng-2], yytext[yyleng-1]); 
+                                if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (%s)\n", linha, syn_column, yytext); 
                                 colAtual += 2;
                             }
                             
@@ -188,7 +189,7 @@ ELSE else
     colAtual++;
     BEGIN INITIAL; 
     if (flag == 0) {
-        char buffer[strlen(string) + 3];
+        buffer[0] = '\0';
         sprintf(buffer, "\"%s\"", string);
 
         if (printall) printf("STRLIT(%s)\n", buffer);
@@ -204,7 +205,7 @@ ELSE else
     string[0] = '\0'; 
 }
 
-<STRINGSTATE>.     { copiarString(yytext[yyleng-1]);  colAtual++;}/*texto normal*/
+<STRINGSTATE>.     { copiarString(yytext[0]);  colAtual++;}/*texto normal*/
 
 
 
