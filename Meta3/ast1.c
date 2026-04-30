@@ -94,3 +94,35 @@ void addFront(struct node *parent, struct node *child){
 
 
 
+int is_operation(enum category c) {
+    switch(c) {
+        /* Operadores binários */
+        case Or: case And: case Xor:
+        case Eq: case Ne:
+        case Lt: case Gt: case Le: case Ge:
+        case Add: case Sub: case Mul: case Div: case Mod:
+        case Lshift: case Rshift:
+        /* Operadores unários */
+        case Not: case Minus: case Plus:
+        /* Outros */
+        case Length:
+        /* Expressões com tipo */
+        case Call: case ParseArgs:
+        case Assign:
+        /* Literais e identificadores */
+        case BoolLit: case Decimal: case Natural: case Identifier:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int ignore(sem_type c){
+    switch (c)
+    {
+     case TYPE_CLASS: case TYPE_DECL:
+        return 1;
+    default:
+        return 0;
+    }
+}

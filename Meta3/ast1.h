@@ -76,7 +76,10 @@ typedef enum {
     TYPE_BOOL,
     TYPE_VOID,
     TYPE_STRING_ARRAY,
-    TYPE_UNDEF
+    TYPE_UNDEF,
+    TYPE_CLASS, // auxiliar para ignorar o tipo de class
+    TYPE_DECL, // auxiliar para ignorar o tipo de class
+    
 } sem_type;
 
 // "int", "double", "boolean", "void", "String[]", "undef"
@@ -138,4 +141,6 @@ void addchild(struct node *parent, struct node *child);
 void append(struct programs_list *programs, struct node *new_program);
 struct node *addChildren(struct programs_list *programs);
 void addFront(struct node *parent, struct node *auxTree);
+int is_operation(enum category c);
+int ignore(sem_type c);
 #endif

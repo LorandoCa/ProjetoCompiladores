@@ -41,7 +41,6 @@ void fill_args_from_header(struct node *header, char *args);
 static int count_children(struct node *n) ;
 static struct node *nth_child(struct node *n, int idx);
 void print_symbol_tables(char *class_name);
-
-
+const char *op_name(enum category c); // Para converter simbolos "add" em "+" por exemplo 
 
 #endif

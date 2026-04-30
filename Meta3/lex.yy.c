@@ -1291,7 +1291,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 234 "jucompiler.l"
-{ if (printall) PrintMatch("ASSIGN"); return ASSIGN; }
+{ if (printall) PrintMatch("ASSIGN"); PASS_TOKEN(); return ASSIGN; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
@@ -1306,22 +1306,22 @@ YY_RULE_SETUP
 case 33:
 YY_RULE_SETUP
 #line 237 "jucompiler.l"
-{ if (printall) PrintMatch("PLUS"); return PLUS; }
+{ if (printall) PrintMatch("PLUS"); PASS_TOKEN(); return PLUS; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 238 "jucompiler.l"
-{ if (printall) PrintMatch("MINUS"); return MINUS; }
+{ if (printall) PrintMatch("MINUS"); PASS_TOKEN(); return MINUS; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 239 "jucompiler.l"
-{ if (printall) PrintMatch("STAR"); return STAR; }
+{ if (printall) PrintMatch("STAR"); PASS_TOKEN(); return STAR; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 240 "jucompiler.l"
-{ if (printall) PrintMatch("DIV"); return DIV; }
+{ if (printall) PrintMatch("DIV"); PASS_TOKEN(); return DIV; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
@@ -2795,27 +2795,21 @@ void show(struct node *no, int depth) {
         for (int i = 0; i < 2 * depth; i++) printf(".");
 
         if (no->token != NULL) {
-            if(no->type != TYPE_UNDEF){
-                if(no->args != NULL)
-                    printf("%s(%s) - %s\n", name, no->token, no->args);
-                else
-                    printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
-            } else {
-                if(no->args != NULL)
-                    printf("%s(%s)%s\n", name, no->token, no->args);
-                else
-                    printf("%s(%s)\n", name, no->token);
-            }
+            if (no->args != NULL)
+                printf("%s(%s)%s - %s\n", name, no->token, no->args, type_name(no->type));
+            else if (is_operation(no->category) && !ignore(no->type))
+                printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
+            else
+                printf("%s(%s)\n", name, no->token);
         } else {
-            if(no->type != TYPE_UNDEF){
+            if (is_operation(no->category) && !ignore(no->type) )
                 printf("%s - %s\n", name, type_name(no->type));
-            }
-            else printf("%s\n", name);
+            else
+                printf("%s\n", name);
         }
         
         next_depth = depth + 1;
     }
-
     // Chamada recursiva sempre usa o próximo nível de profundidade calculado
     struct node_list *atual = no->children;
     while (atual != NULL) {

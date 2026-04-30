@@ -231,13 +231,13 @@ ELSE else
 "||"  { if (printall) PrintMatch("OR"); return OR; }
 "->"  { if (printall) PrintMatch("ARROW"); return RESERVED; }
 
-"="   { if (printall) PrintMatch("ASSIGN"); return ASSIGN; }
+"="   { if (printall) PrintMatch("ASSIGN"); PASS_TOKEN(); return ASSIGN; }
 ">"   { if (printall) PrintMatch("GT"); return GT; }
 "<"   { if (printall) PrintMatch("LT"); return LT; }
-"+"   { if (printall) PrintMatch("PLUS"); return PLUS; }
-"-"   { if (printall) PrintMatch("MINUS"); return MINUS; }
-"*"   { if (printall) PrintMatch("STAR"); return STAR; }
-"/"   { if (printall) PrintMatch("DIV"); return DIV; }
+"+"   { if (printall) PrintMatch("PLUS"); PASS_TOKEN(); return PLUS; }
+"-"   { if (printall) PrintMatch("MINUS"); PASS_TOKEN(); return MINUS; }
+"*"   { if (printall) PrintMatch("STAR"); PASS_TOKEN(); return STAR; }
+"/"   { if (printall) PrintMatch("DIV"); PASS_TOKEN(); return DIV; }
 "%"   { if (printall) PrintMatch("MOD"); return MOD; }
 "!"   { if (printall) PrintMatch("NOT"); return NOT; }
 "^"   { if (printall) PrintMatch("XOR"); return XOR; }
@@ -411,27 +411,21 @@ void show(struct node *no, int depth) {
         for (int i = 0; i < 2 * depth; i++) printf(".");
 
         if (no->token != NULL) {
-            if(no->type != TYPE_UNDEF){
-                if(no->args != NULL)
-                    printf("%s(%s) - %s\n", name, no->token, no->args);
-                else
-                    printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
-            } else {
-                if(no->args != NULL)
-                    printf("%s(%s)%s\n", name, no->token, no->args);
-                else
-                    printf("%s(%s)\n", name, no->token);
-            }
+            if (no->args != NULL)
+                printf("%s(%s)%s - %s\n", name, no->token, no->args, type_name(no->type));
+            else if (is_operation(no->category) && !ignore(no->type))
+                printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
+            else
+                printf("%s(%s)\n", name, no->token);
         } else {
-            if(no->type != TYPE_UNDEF){
+            if (is_operation(no->category) && !ignore(no->type) )
                 printf("%s - %s\n", name, type_name(no->type));
-            }
-            else printf("%s\n", name);
+            else
+                printf("%s\n", name);
         }
         
         next_depth = depth + 1;
     }
-
     // Chamada recursiva sempre usa o próximo nível de profundidade calculado
     struct node_list *atual = no->children;
     while (atual != NULL) {

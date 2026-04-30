@@ -326,6 +326,8 @@ ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                     }
         | IDENTIFIER LPAR error RPAR { $$ = newnode(Dummy, NULL); }
         | IDENTIFIER ASSIGN Expr    {   $$ = newnode(Assign, NULL);
+                                        $$->line   = @2.first_line;
+                                        $$->column = @2.first_column;
                                         struct node *id = newnode(Identifier, $1);
                                         id->line   = @1.first_line;
                                         id->column = @1.first_column;
@@ -423,10 +425,14 @@ ShiftExpr: ShiftExpr LSHIFT AddExpr {   $$ = newnode(Lshift, NULL) ;
     ;
 
 AddExpr: AddExpr PLUS MulExpr       {   $$ = newnode(Add, NULL) ;
+                                        $$->line   = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
        | AddExpr MINUS MulExpr      {  $$ = newnode(Sub, NULL) ;
+                                        $$->line   = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
@@ -435,10 +441,14 @@ AddExpr: AddExpr PLUS MulExpr       {   $$ = newnode(Add, NULL) ;
     ;
 
 MulExpr: MulExpr STAR UnaryExpr     {   $$ = newnode(Mul, NULL) ;
+                                        $$->line   = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
        | MulExpr DIV UnaryExpr      {   $$ = newnode(Div, NULL) ;
+                                        $$->line   = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }

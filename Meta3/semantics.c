@@ -16,13 +16,27 @@ void printError(struct node *no){
 }
 
 
+
+const char *op_name(enum category c) {
+    switch(c) {
+        case Add: return "+";
+        case Sub: return "-";
+        case Mul: return "*";
+        case Div: return "/";
+        case Mod: return "%";
+        case Assign: return "=";
+        default:  return "?";
+    }
+}
+
+
 void fill_args_from_header(struct node *header, char *args) {
     struct node *params_node = nth_child(header, 2);
     args[0] = '\0';
     strcat(args, "(");
     int i = 0;
     struct node_list *p = params_node->children;
-    while (p != NULL) {
+    while (p != NULL && p->node != NULL) {
         struct node *ptype = nth_child(p->node, 0);
         if (i > 0) strcat(args, ", ");
         strcat(args, type_name(category_to_type(ptype->category)));
@@ -145,7 +159,7 @@ struct symbol_list *check_parameters(struct node *MethodParams, struct symbol_li
     
     struct node_list *children_atual = MethodParams->children; // Cada filho é um nó "ParamDecl" com filhos type e Identifier
 
-    while (children_atual != NULL){ // é um nó "ParamDecl". Agora é preciso iterar sobre os seus filhos
+    while (children_atual != NULL && children_atual->node != NULL){ // é um nó "ParamDecl". Agora é preciso iterar sobre os seus filhos
         struct node *ParamDecl = children_atual->node;
         struct node_list *ParamDecl_children = ParamDecl->children; // a lista de nós dos 2 filhos de ParamDecl
 
@@ -271,8 +285,10 @@ sem_type check_expression(struct node *n) {
             sem_type rt = check_expression(rhs_node );
 
             if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
-                result = TYPE_UNDEF;
-                break;
+                printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                       n->line, n->column, op_name(n->category),
+                       type_name(lt), type_name(rt));
+                result = lt; break;
             }
 
             // Compatibilidade: int←int, double←double, double←int, int←double
@@ -290,26 +306,35 @@ sem_type check_expression(struct node *n) {
 
         // ── Operadores aritméticos binários: +, -, *, /, % ───────────────────
         // Aceitam int e double, resultado é double se algum for double
-        case Add: case Sub: case Mul: case Div: case Mod: {
-            sem_type lt = check_expression(nth_child(n, 0) );
-            sem_type rt = check_expression(nth_child(n, 1) );
-            
-            //printf("%d %d \n", lt, rt);
-            if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) { result = TYPE_UNDEF; break; }
+       case Add: case Sub: case Mul: case Div: case Mod: {
+            sem_type lt = check_expression(nth_child(n, 0));
+            sem_type rt = check_expression(nth_child(n, 1));
+
+            if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
+                printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                       n->line, n->column, op_name(n->category),
+                       type_name(lt), type_name(rt));
+                result = TYPE_UNDEF; break;
+            }
+           /* if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
+                printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
+                       n->line, n->column, op_name(n->category),
+                       lt == TYPE_UNDEF ? type_name(lt) : type_name(rt));
+                result = TYPE_UNDEF; break;
+            }*/
 
             if ((lt == TYPE_INT || lt == TYPE_DOUBLE) &&
                 (rt == TYPE_INT || rt == TYPE_DOUBLE)) {
                 result = (lt == TYPE_DOUBLE || rt == TYPE_DOUBLE)
                          ? TYPE_DOUBLE : TYPE_INT;
             } else {
-                // Um ou ambos os operandos têm tipo errado
                 if (lt != TYPE_INT && lt != TYPE_DOUBLE && rt != TYPE_INT && rt != TYPE_DOUBLE)
                     printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                           n->line, n->column, n->token,
+                           n->line, n->column, op_name(n->category),
                            type_name(lt), type_name(rt));
                 else
                     printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
-                           n->line, n->column, n->token,
+                           n->line, n->column, op_name(n->category),
                            (lt != TYPE_INT && lt != TYPE_DOUBLE)
                            ? type_name(lt) : type_name(rt));
                 result = TYPE_UNDEF;
@@ -361,7 +386,12 @@ sem_type check_expression(struct node *n) {
             sem_type lt = check_expression(nth_child(n, 0) );
             sem_type rt = check_expression(nth_child(n, 1) );
 
-            if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) { result = TYPE_UNDEF; break; }
+            if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
+                printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                       n->line, n->column, op_name(n->category),
+                       type_name(lt), type_name(rt));
+                result = TYPE_UNDEF; break;
+            }
 
             int numeric = (lt == TYPE_INT || lt == TYPE_DOUBLE) &&
                           (rt == TYPE_INT || rt == TYPE_DOUBLE);
@@ -501,7 +531,7 @@ void check_MethodHead(struct node *head){
 
     // iterar pelos ParamDecl dentro de MethodParams
     struct node_list *param = paramsNode->children;
-    while(param != NULL){
+    while(param != NULL && param->node != NULL){
         // primeiro filho de ParamDecl é o Type (ou StringArray)
         sem_type tp = param->node->children->node->type;
         char *type = type_name(tp);
@@ -522,13 +552,19 @@ void check_MethodHead(struct node *head){
 
     fill_args_from_header(head, args_str); // preenche args primeiro
     head->args = args_str;
+
+    idNode->type = TYPE_DECL;
     
     insert_symbol(listaGlobal, idNode->token, ret_type, head, 0); // Simbolo inserido na tabela de simbolos
-
     
     struct symbol_list_stack *stc = newStack();
     stc->identifier = idNode->token;
     struct symbol_list *symbol_table_prov = (struct symbol_list *) malloc(sizeof(struct symbol_list)); // Tabela provisoria
+    symbol_table_prov->identifier = NULL;
+    symbol_table_prov->next = NULL;
+    symbol_table_prov->node = NULL;
+
+
     insert_symbol(symbol_table_prov, "return", ret_type, head, 0);
     stc->list = check_parameters(paramsNode, symbol_table_prov); // Estao na lista os parametros do método
 
@@ -654,7 +690,8 @@ void check_MethodBody(struct node *body){
             struct node *id_node = child->node->children->next->node;
 
             sem_type t = category_to_type(child->node->children->node->category);
-            if(insert_symbol(local, id_node->token, t, id_node, 0) == NULL) {
+            id_node->type = TYPE_DECL;
+;            if(insert_symbol(local, id_node->token, t, id_node, 0) == NULL) {
                 printf("Line %d, col %d: Symbol %s already defined\n",
                        id_node->line, id_node->column, id_node->token);
                 semantic_errors++;
@@ -691,7 +728,7 @@ int check_program(struct node *program) {
     //TODO
     // Criar o identificador da lista da classe i.e. ============= Class ... ============================
 
-
+    program->children->node->type = TYPE_CLASS;
     // a partir do ->next começam FieldDecl e MethodDecl
     struct node_list *child = program->children->next;
     while(child != NULL) {
@@ -701,6 +738,7 @@ int check_program(struct node *program) {
             struct node *type_node = nth_child(decl, 0);
             struct node *id_node   = nth_child(decl, 1);
             sem_type t = category_to_type(type_node->category);
+
 
             if(search_symbol(listaGlobal, id_node->token) != NULL) {
                 printf("Line %d, col %d: Symbol %s already defined\n",
@@ -763,7 +801,7 @@ void print_symbol_tables(char *class_name) {
         strcat(params, "(");
         int i = 0;
         struct node_list *p = params_node->children;
-        while (p != NULL) {
+        while (p != NULL && p->node != NULL) {
             struct node *ptype = nth_child(p->node, 0);
             if (i > 0) strcat(params, ", ");
             strcat(params, type_name(category_to_type(ptype->category)));
