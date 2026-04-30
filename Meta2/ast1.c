@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "ast.h"
+#include "ast1.h"
 
 // create a node of a given category with a given lexical symbol
 struct node *newnode(enum category category, char *token) {
@@ -15,10 +15,17 @@ struct node *newnode(enum category category, char *token) {
 
 // append a node to the list of children of the parent node
 void addchild(struct node *parent, struct node *child) {
+
+    struct node_list *children = parent->children;
+    if(children->node == NULL){
+        children->node = child;
+        return;
+    }
+
     struct node_list *new = malloc(sizeof(struct node_list));
     new->node = child;
     new->next = NULL;
-    struct node_list *children = parent->children;
+
     while(children->next != NULL)
         children = children->next;
     children->next = new;
@@ -67,6 +74,20 @@ struct node *addChildren(struct programs_list *programs){
     }
     return finalTree;
 
+}
+
+
+void addFront(struct node *parent, struct node *child){
+
+    if(parent == NULL || child == NULL) return;
+
+    struct node_list *aux = parent->children;
+    
+    struct node_list *newFront = malloc( sizeof(struct node_list) );
+    newFront->node = child;
+    newFront->next = aux;
+    parent->children = newFront;
+    
 }
 
 
