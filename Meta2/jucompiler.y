@@ -8,7 +8,6 @@
 int yylex(void);
 void yyerror(char *);
 
-struct programs_list *handle;
 struct node *ast;
 
 %}
@@ -40,6 +39,9 @@ struct node *ast;
 %nonassoc WITHOUT_ELSE
 %nonassoc ELSE
 
+%locations
+
+
 %%
 
 
@@ -48,7 +50,10 @@ struct node *ast;
 /* === PROGRAMA === */
 program: CLASS IDENTIFIER LBRACE DeclList RBRACE
                                     {   ast = $$ = $4;
-                                        addFront($$, newnode(Identifier, $2) );
+                                        struct node *aux = newnode(Identifier, $2);
+                                        aux->line = @1.first_line;
+                                        aux->column = @1.first_column;
+                                        addFront($$, aux );
                                        }
     ;
 
@@ -66,6 +71,11 @@ DeclList: DeclList MethodDecl       { $$ = $1;
                                                     struct node *parent = newnode(FieldDecl, NULL);
                                                     struct node *newtype = newnode(type , NULL); // copia o tipo
                                                     struct node *newNode = newnode( childrenList->node->category, childrenList->node->token);
+
+                                                    // Propaga line e column do nó original copiado
+                                                    newNode->line   = childrenList->node->line;
+                                                    newNode->column = childrenList->node->column;
+
                                                     addchild(parent, newtype);
                                                     addchild(parent, newNode );
                                                     addchild($$, parent);
@@ -98,18 +108,30 @@ FieldDecl: PUBLIC STATIC Type IdentList SEMICOLON
 
 IdentList: IdentList COMMA IDENTIFIER
                                     {   $$ = $1;
-                                        addchild($$, newnode(Identifier, $3) );
+                                        struct node *id = newnode(Identifier, $3);
+                                        id->line   = @3.first_line;
+                                        id->column = @3.first_column;
+                                        addchild($$, id);
                                         }
          | IDENTIFIER               {   $$ = newnode(FieldDecl, NULL); // Posteriormente ignorado
-                                        addchild($$, newnode(Identifier, $1) ); }
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id); }
     ;
 
 IdentListVar: IdentListVar COMMA IDENTIFIER
                                     {   $$ = $1;
-                                        addchild($$, newnode(Identifier, $3) );
+                                        struct node *id = newnode(Identifier, $3);
+                                        id->line   = @3.first_line;
+                                        id->column = @3.first_column;
+                                        addchild($$, id);
                                         }
          | IDENTIFIER               {   $$ = newnode(VarDecl, NULL);
-                                        addchild($$, newnode(Identifier, $1) ); }
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id); }
     ;
 
 Type: BOOL                          { $$ = newnode(Bool, NULL); }
@@ -120,15 +142,21 @@ Type: BOOL                          { $$ = newnode(Bool, NULL); }
 /* === CABEÇALHO DE MÉTODO === */
 MethodHeader: Type IDENTIFIER LPAR FormalParamOpt RPAR
                                     {   $$ = newnode(MethodHeader, NULL);
+                                        struct node *id = newnode(Identifier, $2);
+                                        id->line   = @2.first_line;
+                                        id->column = @2.first_column;
                                         addchild($$, $1);
-                                        addchild($$, newnode(Identifier, $2) );
+                                        addchild($$, id);
                                         addchild($$, $4);
                                         }
 
             | VOID IDENTIFIER LPAR FormalParamOpt RPAR
                                     {   $$ = newnode(MethodHeader, NULL);
-                                        addchild($$, newnode(Void, NULL) );
-                                        addchild($$, newnode(Identifier, $2) );
+                                        struct node *id = newnode(Identifier, $2);
+                                        id->line   = @2.first_line;
+                                        id->column = @2.first_column;
+                                        addchild($$, newnode(Void, NULL));
+                                        addchild($$, id);
                                         addchild($$, $4);
                                         }
     ;
@@ -141,23 +169,30 @@ FormalParams: NormalParams          { $$ = $1; }
             | STRING LSQ RSQ IDENTIFIER
                 { $$ = newnode(MethodParams, NULL);
                   struct node *aux = newnode(ParamDecl, NULL);
+                  struct node *id = newnode(Identifier, $4);
+                  id->line   = @4.first_line;
+                  id->column = @4.first_column;
                   addchild(aux, newnode(StringArray, NULL));
-                  addchild(aux, newnode(Identifier, $4));
+                  addchild(aux, id);
                   addchild($$, aux); }
     ;
 
 NormalParams: Type IDENTIFIER
                 { $$ = newnode(MethodParams, NULL);
                   struct node *aux = newnode(ParamDecl, NULL);
+                  struct node *id = newnode(Identifier, $2);
+                  id->line = @2.first_line; id->column = @2.first_column;
                   addchild(aux, $1);
-                  addchild(aux, newnode(Identifier, $2));
+                  addchild(aux, id);
                   addchild($$, aux); }
 
             | NormalParams COMMA Type IDENTIFIER
                 { $$ = $1;
                   struct node *aux = newnode(ParamDecl, NULL);
                   addchild(aux, $3);
-                  addchild(aux, newnode(Identifier, $4));
+                  struct node *aux = newnode(Identifier, $4);
+                  aux->line = @2.first_line; aux->column = @2.first_column;
+                  addchild(aux,aux);
                   addchild($$, aux); }
     ;
 /* === CORPO DE MÉTODO === */
@@ -182,6 +217,10 @@ StmtOrVarList: StmtOrVarList Statement
                                                     struct node *parent = newnode(VarDecl, NULL);
                                                     struct node *newtype = newnode(type, NULL);
                                                     struct node *newNode = newnode(childrenList->node->category, childrenList->node->token);
+                                                    
+                                                    // Propaga line e column do nó original copiado
+                                                    newNode->line   = childrenList->node->line;
+                                                    newNode->column = childrenList->node->column;
                                                     
                                                     addchild(parent, newtype);
                                                     addchild(parent, newNode);
@@ -236,8 +275,10 @@ Statement: LBRACE StmtList RBRACE   {
                                         addchild($$, $3); 
                                         }
          | PRINT LPAR STRLIT RPAR SEMICOLON
-                                    {   $$ = newnode(Print, NULL); 
-                                        addchild($$, newnode(StrLit, $3) ); 
+                                    {   $$ = newnode(Print, NULL);
+                                        struct node *aux = newnode(StrLit, $3);
+                                        aux->line = @3.first_line; aux->column = @3.first_column;
+                                        addchild($$, aux); 
                                         }
           | error SEMICOLON         { $$ = newnode(Dummy, NULL) ;}
     ;
@@ -275,19 +316,28 @@ ExprOpt: Expr                       {   $$ = $1 ;
     ;
 
 ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
-                                    {   $$ = newnode(Call, NULL) ;
-                                        addchild($$, newnode(Identifier, $1) );
-                                       if($3 != NULL) addchild($$, $3);
+                                    {   $$ = newnode(Call, NULL);
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id);
+                                        if($3 != NULL) addchild($$, $3);
                                     }
         | IDENTIFIER LPAR error RPAR { $$ = newnode(Dummy, NULL); }
         | IDENTIFIER ASSIGN Expr    {   $$ = newnode(Assign, NULL);
-                                        addchild($$, newnode(Identifier, $1) );
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id);
                                         addchild($$, $3);
                                         }
         | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
                                     {   $$ = newnode(ParseArgs, NULL);
-                                        addchild($$, newnode(Identifier, $3) );
-                                        addchild($$, $5 );
+                                        struct node *id = newnode(Identifier, $3);
+                                        id->line   = @3.first_line;
+                                        id->column = @3.first_column;
+                                        addchild($$, id);
+                                        addchild($$, $5);
                                         }
     ;
 
@@ -298,8 +348,11 @@ Expr: AssignExpr                    {   $$ = $1 ;
     ;
 
 AssignExpr: IDENTIFIER ASSIGN AssignExpr
-                                    {   $$ = newnode(Assign, NULL); 
-                                        addchild($$, newnode(Identifier, $1) ); 
+                                    {   $$ = newnode(Assign, NULL);
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id);
                                         addchild($$, $3);
                                         }
           | OrExpr                  {   $$ = $1;}
@@ -408,12 +461,20 @@ UnaryExpr: MINUS UnaryExpr          {   $$ = newnode(Minus, NULL);
          | PostfixExpr              {   $$ = $1; }
     ;
 
-PostfixExpr: IDENTIFIER DOTLENGTH   {   $$ = newnode(Length, NULL) ;
-                                        addchild($$, newnode(Identifier, $1) );
+PostfixExpr: IDENTIFIER DOTLENGTH
+                                    {   $$ = newnode(Length, NULL);
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id);
                                         }
+
            | IDENTIFIER LPAR ArgListOpt RPAR
                                     {   $$ = newnode(Call, NULL);
-                                        addchild($$, newnode(Identifier, $1) ); 
+                                        struct node *id = newnode(Identifier, $1);
+                                        id->line   = @1.first_line;
+                                        id->column = @1.first_column;
+                                        addchild($$, id);
                                         if($3 != NULL) addchild($$, $3);
                                         }
 
@@ -421,7 +482,10 @@ PostfixExpr: IDENTIFIER DOTLENGTH   {   $$ = newnode(Length, NULL) ;
             
            | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
                                     {   $$ = newnode(ParseArgs, NULL);
-                                        addchild($$, newnode(Identifier, $3) );
+                                        struct node *aux =  newnode(Identifier, $3);
+                                        aux->line =  @3.first_line; 
+                                        aux->column = @3.first_column;
+                                        addchild($$, aux);
                                         addchild($$, $5 );
                                         }
            | PARSEINT LPAR error RPAR
@@ -429,10 +493,18 @@ PostfixExpr: IDENTIFIER DOTLENGTH   {   $$ = newnode(Length, NULL) ;
 
            | LPAR Expr RPAR         {   $$ = $2; }
            
-           | IDENTIFIER             {   $$ = newnode(Identifier, $1); }
-           | NATURAL                {   $$ = newnode(Natural, $1); }
-           | DECIMAL                {   $$ = newnode(Decimal, $1); }
-           | BOOLLIT                {   $$ = newnode(BoolLit, $1); }
+           | IDENTIFIER             {   $$ = newnode(Identifier, $1); 
+                                        $$->line = @1.first_line; $$->column = @1.first_column;
+                                        }
+           | NATURAL                {   $$ = newnode(Natural, $1); 
+                                        $$->line = @1.first_line; $$->column = @1.first_column;
+                                        }
+           | DECIMAL                {   $$ = newnode(Decimal, $1); 
+                                        $$->line = @1.first_line; $$->column = @1.first_column;
+                                        }
+           | BOOLLIT                {   $$ = newnode(BoolLit, $1); 
+                                        $$->line = @1.first_line; $$->column = @1.first_column;
+                                        }
     ;
 
 /* === ARGUMENTOS === */

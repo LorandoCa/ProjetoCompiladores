@@ -33,10 +33,11 @@
         syn_line = linha; \
         syn_column = colAtual; \
         if(YYSTATE == INITIAL) colAtual += yyleng; \
+        yylloc.first_line = syn_line; \
+        yylloc.first_column = syn_column; 
     }
 
     extern struct node *ast;
-    extern struct programs_list *handle;
 
 static const char *category_names[] = {
     /* Nó raiz */
