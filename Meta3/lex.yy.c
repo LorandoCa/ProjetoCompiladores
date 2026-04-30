@@ -2796,7 +2796,7 @@ void show(struct node *no, int depth) {
 
         if (no->token != NULL) {
             if (no->args != NULL)
-                printf("%s(%s)%s - %s\n", name, no->token, no->args, type_name(no->type));
+                printf("%s(%s) - %s\n", name, no->token, no->args);
             else if (is_operation(no->category) && !ignore(no->type))
                 printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
             else
@@ -2841,6 +2841,7 @@ int main(int argc, char *argv[]) {
 
     if (syntatic_analisis || semantic_analisis) {
         yyparse();
+        //show(ast, 0);
 
     }
 

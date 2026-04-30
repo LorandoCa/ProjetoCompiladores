@@ -15,13 +15,14 @@ struct symbol_list {
 struct symbol_list_stack { // Usado so para metodos. Haverá um so symbol_list para fieldDeclaration e methodDeclaration para facil acesso no caso de utilizacao de uma var global
 	char *identifier; // Nome do metodo/escopo
 	struct symbol_list *list ;
-
+	struct node *header; // Ajuda a limitar a  identificar o scope posteriormente
 	struct symbol_list_stack *next;
 };
 
 
 
 struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, sem_type type, struct node *node, int param);
+struct symbol_list *insert_method_symbol(struct symbol_list *table, char *identifier, sem_type type, struct node *node);
 struct symbol_list *search_symbol(struct symbol_list *symbol_table, char *identifier);
 int check_program(struct node *program);
 void check_MethodDecl(struct node *Decl);

@@ -38,7 +38,7 @@ void fill_args_from_header(struct node *header, char *args) {
     struct node_list *p = params_node->children;
     while (p != NULL && p->node != NULL) {
         struct node *ptype = nth_child(p->node, 0);
-        if (i > 0) strcat(args, ", ");
+        if (i > 0) strcat(args, ",");
         strcat(args, type_name(category_to_type(ptype->category)));
         p = p->next;
         i++;
@@ -59,15 +59,23 @@ sem_type check_calls(struct node *call) {
     // 1. Recolhe tipos dos argumentos reais
     int n_args = 0;
     sem_type arg_types[64];
+    char call_args[256];
+    call_args[0] = '\0';
+    strcat(call_args, "(");
     if (args_node != NULL) {
         struct node_list *a = args_node->children;
         while (a != NULL) {
             arg_types[n_args++] = check_expression(a->node);
-            //printf("%d\n",  arg_types[n_args - 1]);
+            if (n_args > 1) strcat(call_args, ",");
+            strcat(call_args, type_name(arg_types[n_args - 1]));
             a = a->next;
         }
     }
+    strcat(call_args, ")");
 
+    //printf("%s\n", call_args);
+    
+    
     // 2. Percorre TODA a tabela global à procura de métodos com este nome
     struct symbol_list *sym        = listaGlobal->next;
     struct symbol_list *exact      = NULL;
@@ -89,7 +97,7 @@ sem_type check_calls(struct node *call) {
         int n_params = 0;
         sem_type param_types[64];
         struct node_list *p = params_node->children;
-        while (p != NULL) {
+        while (p != NULL && p->node != NULL) {
             struct node *ptype = nth_child(p->node, 0); // filho 0 de ParamDecl = tipo
             param_types[n_params++] = category_to_type(ptype->category);
             p = p->next;
@@ -109,21 +117,20 @@ sem_type check_calls(struct node *call) {
         if (is_exact) { exact = sym; break; }
 
         //printf("%d %d \n", n_params, n_args);
-
+        if(exact != NULL) break;
 
         // Verifica compatibilidade (int↔double nas posições numéricas). OU seja, mesmo nao sendo exact, se for compativel é aceite
         int is_compat = 1;
         for (int i = 0; i < n_params; i++) {
-            int both_numeric = (param_types[i] == TYPE_INT || param_types[i] == TYPE_DOUBLE)
-                            && (arg_types[i]   == TYPE_INT || arg_types[i]   == TYPE_DOUBLE);
-            if (param_types[i] != arg_types[i] && !both_numeric) {
-                is_compat = 0; break;
-            }
+            if (param_types[i] == arg_types[i]) continue; // exact nesta posição
+            // só permite promoção int → double
+            if (param_types[i] == TYPE_DOUBLE && arg_types[i] == TYPE_INT) continue;
+            // tudo o resto é incompatível
+            is_compat = 0; break;
         }
         if (is_compat) { compat = sym; n_compat++; }
-    
-        sym = sym->next;
-    }
+            sym = sym->next;
+        }
 
     // 3. Aplica regras do enunciado
     if (exact != NULL) {
@@ -144,8 +151,9 @@ sem_type check_calls(struct node *call) {
         printf("Line %d, col %d: Reference to method %s is ambiguous\n",
                id_node->line, id_node->column, call_id);
     } else {
-        printf("Line %d, col %d: Cannot find symbol %s\n",
-               id_node->line, id_node->column, call_id);
+        //printf("Nao encontro no check_calls\n");
+        printf("Line %d, col %d: Cannot find symbol %s%s\n",
+               id_node->line, id_node->column, call_id, call_args);
     }
     semantic_errors++;
    
@@ -167,6 +175,7 @@ struct symbol_list *check_parameters(struct node *MethodParams, struct symbol_li
         struct node *ID_node = ParamDecl_children->next->node;
 
         ParamDecl->type = TYPE_UNDEF;
+        ID_node->type = TYPE_DECL;
         
         struct symbol_list *result = insert_symbol(symbol_table_prov, ID_node->token, category_to_type(type_node->category), ID_node, 1);
 
@@ -515,6 +524,27 @@ struct symbol_list_stack *newStack(){
     return stack;
 }
 
+void pre_check_MethodHead(struct node *head){
+    // filho 1: Type ou Void
+    // filho 2: Identifier
+    struct node *typeNode   = head->children->node;
+    struct node *idNode     = head->children->next->node;
+
+    //printf("aqui %s", idNode->token);
+
+    sem_type ret_type = category_to_type(typeNode->category);
+    char *args_str= (char*)malloc(64*sizeof(char));
+
+    fill_args_from_header(head, args_str); // preenche args primeiro
+    head->args = args_str;
+
+    //printf("%s\n", args_str);
+
+    idNode->type = TYPE_DECL;
+    insert_method_symbol(listaGlobal, idNode->token, ret_type, head); 
+
+}
+
 
 void check_MethodHead(struct node *head){
     
@@ -555,7 +585,8 @@ void check_MethodHead(struct node *head){
 
     idNode->type = TYPE_DECL;
     
-    insert_symbol(listaGlobal, idNode->token, ret_type, head, 0); // Simbolo inserido na tabela de simbolos
+    //Nao é preciso porque ja foi adicionado no pre_check
+    //insert_symbol(listaGlobal, idNode->token, ret_type, head, 0); // Simbolo inserido na tabela de simbolos
     
     struct symbol_list_stack *stc = newStack();
     stc->identifier = idNode->token;
@@ -575,7 +606,7 @@ void check_MethodHead(struct node *head){
     struct symbol_list_stack *copy = newStack();
     copy->identifier = stc->identifier;
     copy->list = stc->list;
-
+    copy->header = head;
     if(functionsList == NULL){
        
         functionsList = copy;
@@ -621,7 +652,6 @@ void check_statement(struct node *n) {
             // tipo de retorno esperado está no topo da stack como "return"
             struct symbol_list *ret = search_symbol(stack->list, "return");
             sem_type expected = ret ? ret->type : TYPE_VOID;
-
             if(expected == TYPE_VOID) {
                 if(expr != NULL) {
                     sem_type rt = check_expression(expr);
@@ -638,6 +668,14 @@ void check_statement(struct node *n) {
                     semantic_errors++;
                 } else {
                     sem_type rt = check_expression(expr);
+                    //printf("%d aqui\n", rt);
+                    
+                    if(rt == TYPE_UNDEF){
+                        printf("Line %d, col %d: Incompatible type %s in return statement\n",
+                               expr->line, expr->column, type_name(rt));
+                        semantic_errors++;
+                    }
+
                     int numeric = (expected == TYPE_INT || expected == TYPE_DOUBLE)
                                && (rt == TYPE_INT || rt == TYPE_DOUBLE);
                     if(rt != TYPE_UNDEF && rt != expected && !numeric) {
@@ -645,6 +683,7 @@ void check_statement(struct node *n) {
                                expr->line, expr->column, type_name(rt));
                         semantic_errors++;
                     }
+
                 }
             }
             break;
@@ -683,7 +722,7 @@ void check_MethodBody(struct node *body){
 
     struct node_list *child = body->children;
 
-    while(child != NULL) {
+    while(child != NULL && child->node != NULL) {
         if(child->node->category == VarDecl){
             // Tratar declaracao de variaveis
             struct symbol_list *local = stack->list;
@@ -724,16 +763,12 @@ void check_MethodDecl(struct node *Decl){
 int check_program(struct node *program) {
     listaGlobal = newlist();
     stack = NULL;
-    
-    //TODO
-    // Criar o identificador da lista da classe i.e. ============= Class ... ============================
-
     program->children->node->type = TYPE_CLASS;
-    // a partir do ->next começam FieldDecl e MethodDecl
+    
+    //Uma fase inicial que vai adicionar cabeçalhos de métodos e fiel decl, a lista de símbolos
     struct node_list *child = program->children->next;
     while(child != NULL) {
         struct node *decl = child->node;
-
         if(decl->category == FieldDecl) {
             struct node *type_node = nth_child(decl, 0);
             struct node *id_node   = nth_child(decl, 1);
@@ -746,9 +781,24 @@ int check_program(struct node *program) {
                 semantic_errors++;
             } else {
                 insert_symbol(listaGlobal, id_node->token, t, id_node, 0);
-            }
+            } 
+        }
+        if(decl->category == MethodDecl) {
+            pre_check_MethodHead(decl->children->node);
+        }
 
-        } else if(decl->category == MethodDecl) {
+        child = child->next;
+
+
+    }
+
+
+    //Após registar todos os métodos e field declarations, iniciar a analise das declaracoes e bodys
+    child = program->children->next;
+    while(child != NULL) {
+        struct node *decl = child->node;
+
+        if(decl->category == MethodDecl) {
             check_MethodDecl(decl);
         }
 
@@ -777,6 +827,35 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, s
     return new;
 }
 
+// para métodos - permite overloading (mesmo nome, args diferentes)
+struct symbol_list *insert_method_symbol(struct symbol_list *table, char *identifier, sem_type type, struct node *node) {
+    // Verifica se já existe método com MESMO nome E mesma assinatura
+    char args[256];
+    fill_args_from_header(node, args);
+    
+    struct symbol_list *sym = table->next;
+    while (sym != NULL) {
+        if (strcmp(sym->identifier, identifier) == 0 &&
+            sym->node->args != NULL &&
+            strcmp(sym->node->args, args) == 0) {
+            return NULL; // mesmo nome E mesma assinatura → duplicado
+        }
+        sym = sym->next;
+    }
+
+    // Insere normalmente
+    struct symbol_list *new = calloc(1, sizeof(struct symbol_list));
+    new->identifier = strdup(identifier);
+    new->type = type;
+    new->node = node;
+    new->next = NULL;
+    new->param = 0;
+    struct symbol_list *s = table;
+    while (s->next != NULL) s = s->next;
+    s->next = new;
+    return new;
+}
+
 // look up a symbol by its identifier
 struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
     struct symbol_list *symbol;
@@ -785,6 +864,7 @@ struct symbol_list *search_symbol(struct symbol_list *table, char *identifier) {
             return symbol;
     return NULL;
 }
+
 
 
 void print_symbol_tables(char *class_name) {
@@ -803,7 +883,7 @@ void print_symbol_tables(char *class_name) {
         struct node_list *p = params_node->children;
         while (p != NULL && p->node != NULL) {
             struct node *ptype = nth_child(p->node, 0);
-            if (i > 0) strcat(params, ", ");
+            if (i > 0) strcat(params, ",");
             strcat(params, type_name(category_to_type(ptype->category)));
             p = p->next;
             i++;
@@ -817,13 +897,8 @@ void print_symbol_tables(char *class_name) {
     // Tabelas dos métodos
     struct symbol_list_stack *scope = functionsList;
     while (scope != NULL) {
-        // Encontra o símbolo na listaGlobal para obter o args
-        struct symbol_list *sym = listaGlobal->next;
-        while (sym != NULL) {
-            if (strcmp(sym->identifier, scope->identifier) == 0) break;
-            sym = sym->next;
-        }
-        char *args = (sym != NULL && sym->node->args != NULL) ? sym->node->args : "()";
+        char *args = (scope->header != NULL && scope->header->args != NULL) 
+                    ? scope->header->args : "()";
         printf("\n===== Method %s%s Symbol Table =====\n", scope->identifier, args);
         struct symbol_list *s = scope->list->next;
         while (s != NULL) {
