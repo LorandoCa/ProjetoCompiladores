@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "ast1.h"
 #include "semantics.h"
 
@@ -252,9 +253,27 @@ sem_type check_expression(struct node *n) {
             }
             break;
 
-        case Decimal:
-            result = TYPE_DOUBLE;
+        case Decimal: {
+            errno = 0;
+            char clean[256];
+            int j = 0;
+            for (int i = 0; n->token[i] != '\0'; i++)
+                if (n->token[i] != '_') clean[j++] = n->token[i];
+            clean[j] = '\0';
+            
+            double val = strtod(clean, NULL);
+            // só é out of bounds se for mesmo 0 (underflow total) ou infinito
+            if (errno == ERANGE && val == 0.0) {
+                printf("Line %d, col %d: Number %s out of bounds\n",
+                    n->line, n->column, n->token);
+                semantic_errors++;
+                result = TYPE_DOUBLE;
+            } else {
+                result = TYPE_DOUBLE;
+            }
+            n->type = result;
             break;
+        }
 
         case BoolLit:
             result = TYPE_BOOL;
@@ -480,9 +499,14 @@ sem_type check_expression(struct node *n) {
         // ── ParseArgs: Integer.parseInt(id[expr]) → int ───────────────────────
         // AST: ParseArgs → [Identifier, Expr]
         case ParseArgs: {
-            // O índice pode ser qualquer expr — verificamos mesmo assim
-            check_expression(nth_child(n, 0) );
+            struct node *id_node  = nth_child(n, 0); // Identifier(args)
+            struct node *idx_node = nth_child(n, 1); // Natural(0)
+            
+            check_expression(id_node);
+            idx_node->type = TYPE_INT; // força int, não precisa de check_expression
+            
             result = TYPE_INT;
+            n->type = result;
             break;
         }
 
