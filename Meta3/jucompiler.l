@@ -465,13 +465,12 @@ int main(int argc, char *argv[]) {
         check_program(ast);
     }
 
-    if(errors == 0 && printTree ){
+    if(errors == 0 && printTree == 1 ){
         printf("\n");
         show(ast, 0);
     }
 
 
-    else return 0;
  
     // correr analisador analisador semantico 
     return 0;
