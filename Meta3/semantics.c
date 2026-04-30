@@ -715,7 +715,21 @@ void check_statement(struct node *n) {
 
         case Print:
             // filho 0 pode ser qualquer expr ou StrLit
-            check_expression(nth_child(n, 0));
+            struct node *expr = nth_child(n, 0); // pode ser NULL
+            sem_type res = check_expression(expr);
+
+            if(res == TYPE_UNDEF){
+                if(expr->category  != Call){
+                    
+                    printf("Line %d, col %d: Incompatible type undef in System.out.print statement\n",
+                                expr->line, expr->column);
+                
+                }else{
+                    struct node *expr_child = nth_child(expr, 0); // identifier
+                    printf("Line %d, col %d: Incompatible type undef in System.out.print statement\n",
+                                    expr_child->line, expr_child->column);
+                }
+            }
             break;
 
         case Block:
@@ -798,13 +812,14 @@ int check_program(struct node *program) {
             struct node *id_node   = nth_child(decl, 1);
             sem_type t = category_to_type(type_node->category);
 
+            id_node->type = TYPE_DECL;
 
             if(search_symbol(listaGlobal, id_node->token) != NULL) {
                 printf("Line %d, col %d: Symbol %s already defined\n",
                        id_node->line, id_node->column, id_node->token);
                 semantic_errors++;
             } else {
-                insert_symbol(listaGlobal, id_node->token, t, id_node, 0);
+                insert_symbol(listaGlobal, id_node->token, t, id_node, 1);
             } 
         }
         if(decl->category == MethodDecl) {
@@ -848,6 +863,7 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, s
     while(symbol->next != NULL)
         symbol = symbol->next;
     symbol->next = new;    /* insert new symbol at the tail of the list */
+    //printf("%s\n", identifier);
     return new;
 }
 
@@ -896,25 +912,29 @@ void print_symbol_tables(char *class_name) {
     printf("===== Class %s Symbol Table =====\n", class_name);
     struct symbol_list *sym = listaGlobal->next;
     while (sym != NULL) {
-        struct node *header = sym->node;
-        struct node *params_node = nth_child(header, 2);
+        if(sym->param == 0){ // Uma declaracao de metodo
+            struct node *header = sym->node;
+            struct node *params_node = nth_child(header, 2);
 
-        // Constrói string dos parâmetros
-        char params[256];
-        params[0] = '\0';
-        strcat(params, "(");
-        int i = 0;
-        struct node_list *p = params_node->children;
-        while (p != NULL && p->node != NULL) {
-            struct node *ptype = nth_child(p->node, 0);
-            if (i > 0) strcat(params, ",");
-            strcat(params, type_name(category_to_type(ptype->category)));
-            p = p->next;
-            i++;
+            // Constrói string dos parâmetros
+            char params[256];
+            params[0] = '\0';
+            strcat(params, "(");
+            int i = 0;
+            struct node_list *p = params_node->children;
+            while (p != NULL && p->node != NULL) {
+                struct node *ptype = nth_child(p->node, 0);
+                if (i > 0) strcat(params, ",");
+                strcat(params, type_name(category_to_type(ptype->category)));
+                p = p->next;
+                i++;
+            }
+            strcat(params, ")");
+
+            printf("%s\t%s\t%s\n", sym->identifier, params, type_name(sym->type));
+        }else{
+            printf("%s\t\t%s\n", sym->identifier, type_name(sym->type));
         }
-        strcat(params, ")");
-
-        printf("%s\t%s\t%s\n", sym->identifier, params, type_name(sym->type));
         sym = sym->next;
     }
 
