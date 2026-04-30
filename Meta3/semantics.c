@@ -26,6 +26,20 @@ const char *op_name(enum category c) {
         case Div: return "/";
         case Mod: return "%";
         case Assign: return "=";
+        case Lshift: return "<<";
+        case Rshift: return ">>";
+        case Xor: return "^";
+        case Not: return "!";
+        case Plus: return "+";
+        case Minus: return "-";
+        case And: return "&&";
+        case Or: return "||";
+        case Eq: return "==";
+        case Ne: return "!=";
+        case Lt: return "<";
+        case Le: return "<=";
+        case Gt: return ">";
+        case Ge: return ">=";
         default:  return "?";
     }
 }
@@ -234,7 +248,7 @@ sem_type check_expression(struct node *n) {
     struct symbol_list *class_sym = listaGlobal;
     if (n == NULL) return TYPE_UNDEF;
 
-    sem_type result = TYPE_UNDEF;
+    sem_type result = TYPE_INT;
 
     switch (n->category) {
 
@@ -247,7 +261,7 @@ sem_type check_expression(struct node *n) {
                 char msg[256];
                 snprintf(msg, sizeof msg, "Number %s out of bounds", n->token);
                 printf("Line %d, col %d: %s\n", n->line, n->column, msg);
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             } else {
                 result = TYPE_INT;
             }
@@ -281,7 +295,7 @@ sem_type check_expression(struct node *n) {
 
         case StrLit:
             // Só aparece em Print, mas por segurança
-            result = TYPE_UNDEF;
+            result = TYPE_INT;
             break;
 
         // ── Identificador ─────────────────────────────────────────────────────
@@ -295,7 +309,7 @@ sem_type check_expression(struct node *n) {
             if (sym == NULL) {
                 printf("Line %d, col %d: Cannot find symbol %s\n",
                        n->line, n->column, n->token);
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             } else {
                 //printf("%s\n", sym->identifier);
                 result = sym->type;
@@ -327,7 +341,7 @@ sem_type check_expression(struct node *n) {
             } else {
                 printf("Line %d, col %d: Incompatible type %s in = statement\n",
                        n->line, n->column, type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -365,7 +379,7 @@ sem_type check_expression(struct node *n) {
                            n->line, n->column, op_name(n->category),
                            (lt != TYPE_INT && lt != TYPE_DOUBLE)
                            ? type_name(lt) : type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -382,9 +396,9 @@ sem_type check_expression(struct node *n) {
                 result = TYPE_INT;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, n->token,
+                       n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -401,9 +415,9 @@ sem_type check_expression(struct node *n) {
                 result = TYPE_BOOL;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, n->token,
+                       n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -427,9 +441,9 @@ sem_type check_expression(struct node *n) {
                 result = TYPE_BOOL;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, n->token,
+                       n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -447,9 +461,9 @@ sem_type check_expression(struct node *n) {
                 result = TYPE_BOOL;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, n->token,
+                       n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -465,8 +479,8 @@ sem_type check_expression(struct node *n) {
                 result = t;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
-                       n->line, n->column, n->token, type_name(t));
-                result = TYPE_UNDEF;
+                       n->line, n->column, op_name(n->category), type_name(t));
+                result = TYPE_INT;
             }
             break;
         }
@@ -482,7 +496,7 @@ sem_type check_expression(struct node *n) {
             } else {
                 printf("Line %d, col %d: Operator ! cannot be applied to type %s\n",
                        n->line, n->column, type_name(t));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -521,11 +535,11 @@ sem_type check_expression(struct node *n) {
 
         // ── Dummy: nó de erro sintático, ignora ──────────────────────────────
         case Dummy:
-            result = TYPE_UNDEF;
+            result = TYPE_INT;
             break;
 
         default:
-            result = TYPE_UNDEF;
+            result = TYPE_INT;
             break;
     }
 
@@ -562,13 +576,18 @@ void pre_check_MethodHead(struct node *head){
     char *args_str= (char*)malloc(64*sizeof(char));
 
     fill_args_from_header(head, args_str); // preenche args primeiro
-    head->args = args_str;
-
-    //printf("%s\n", args_str);
 
     idNode->type = TYPE_DECL;
-    insert_method_symbol(listaGlobal, idNode->token, ret_type, head); 
-
+    // Try to insert method symbol - if it returns NULL, there's a duplicate
+    struct symbol_list *result = insert_method_symbol(listaGlobal, idNode->token, ret_type, head);
+    if (result == NULL) {
+        printf("Line %d, col %d: Symbol %s%s already defined\n",
+               idNode->line, idNode->column, idNode->token, args_str);
+        semantic_errors++;
+        head->args = NULL; // Mark as duplicate so check_MethodDecl skips it
+    } else {
+        head->args = args_str;
+    }
 }
 
 
@@ -793,6 +812,11 @@ void check_MethodDecl(struct node *Decl){
     struct node *header = nth_child(Decl, 0);
     struct node *body   = nth_child(Decl, 1);
 
+    // Skip processing if method was already defined as duplicate (header->args will be NULL if duplicate)
+    if (header->args == NULL) {
+        return;
+    }
+
     check_MethodHead(header); // constrói tabela local e empurra para a stack
 
     check_MethodBody(body);   // usa stack->list como tabela local
@@ -935,6 +959,7 @@ void print_symbol_tables(char *class_name) {
             strcat(params, ")");
 
             printf("%s\t%s\t%s\n", sym->identifier, params, type_name(sym->type));
+            
         }else{
             printf("%s\t\t%s\n", sym->identifier, type_name(sym->type));
         }
