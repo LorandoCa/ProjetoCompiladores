@@ -492,6 +492,8 @@ sem_type check_expression(struct node *n) {
         case Length: {
             // O filho tem de ser String[] para ter sentido, mas o enunciado
             // diz que .length devolve sempre int
+            struct node *id_node  = nth_child(n, 0); // Identifier(args)
+            id_node->type = TYPE_STRING_ARRAY;
             result = TYPE_INT;
             break;
         }
@@ -717,6 +719,7 @@ void check_statement(struct node *n) {
             // filho 0 pode ser qualquer expr ou StrLit
             struct node *expr = nth_child(n, 0); // pode ser NULL
             sem_type res = check_expression(expr);
+
 
             if(res == TYPE_UNDEF){
                 if(expr->category  != Call){
