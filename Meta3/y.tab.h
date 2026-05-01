@@ -79,29 +79,29 @@ extern int yydebug;
     ASSIGN = 280,                  /* ASSIGN  */
     OR = 281,                      /* OR  */
     AND = 282,                     /* AND  */
-    XOR = 283,                     /* XOR  */
-    EQ = 284,                      /* EQ  */
-    NE = 285,                      /* NE  */
-    LT = 286,                      /* LT  */
-    LE = 287,                      /* LE  */
-    GT = 288,                      /* GT  */
-    GE = 289,                      /* GE  */
-    LSHIFT = 290,                  /* LSHIFT  */
-    RSHIFT = 291,                  /* RSHIFT  */
-    PLUS = 292,                    /* PLUS  */
-    MINUS = 293,                   /* MINUS  */
-    STAR = 294,                    /* STAR  */
-    DIV = 295,                     /* DIV  */
-    MOD = 296,                     /* MOD  */
-    NOT = 297,                     /* NOT  */
-    RESERVED = 298,                /* RESERVED  */
-    IDENTIFIER = 299,              /* IDENTIFIER  */
-    NATURAL = 300,                 /* NATURAL  */
-    DECIMAL = 301,                 /* DECIMAL  */
-    INTEGER = 302,                 /* INTEGER  */
-    DOUBLE = 303,                  /* DOUBLE  */
-    STRLIT = 304,                  /* STRLIT  */
-    BOOLLIT = 305,                 /* BOOLLIT  */
+    EQ = 283,                      /* EQ  */
+    NE = 284,                      /* NE  */
+    LT = 285,                      /* LT  */
+    LE = 286,                      /* LE  */
+    GT = 287,                      /* GT  */
+    GE = 288,                      /* GE  */
+    LSHIFT = 289,                  /* LSHIFT  */
+    RSHIFT = 290,                  /* RSHIFT  */
+    PLUS = 291,                    /* PLUS  */
+    MINUS = 292,                   /* MINUS  */
+    STAR = 293,                    /* STAR  */
+    DIV = 294,                     /* DIV  */
+    MOD = 295,                     /* MOD  */
+    NOT = 296,                     /* NOT  */
+    RESERVED = 297,                /* RESERVED  */
+    IDENTIFIER = 298,              /* IDENTIFIER  */
+    NATURAL = 299,                 /* NATURAL  */
+    DECIMAL = 300,                 /* DECIMAL  */
+    INTEGER = 301,                 /* INTEGER  */
+    DOUBLE = 302,                  /* DOUBLE  */
+    STRLIT = 303,                  /* STRLIT  */
+    BOOLLIT = 304,                 /* BOOLLIT  */
+    XOR = 305,                     /* XOR  */
     WITHOUT_ELSE = 306             /* WITHOUT_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -136,29 +136,29 @@ extern int yydebug;
 #define ASSIGN 280
 #define OR 281
 #define AND 282
-#define XOR 283
-#define EQ 284
-#define NE 285
-#define LT 286
-#define LE 287
-#define GT 288
-#define GE 289
-#define LSHIFT 290
-#define RSHIFT 291
-#define PLUS 292
-#define MINUS 293
-#define STAR 294
-#define DIV 295
-#define MOD 296
-#define NOT 297
-#define RESERVED 298
-#define IDENTIFIER 299
-#define NATURAL 300
-#define DECIMAL 301
-#define INTEGER 302
-#define DOUBLE 303
-#define STRLIT 304
-#define BOOLLIT 305
+#define EQ 283
+#define NE 284
+#define LT 285
+#define LE 286
+#define GT 287
+#define GE 288
+#define LSHIFT 289
+#define RSHIFT 290
+#define PLUS 291
+#define MINUS 292
+#define STAR 293
+#define DIV 294
+#define MOD 295
+#define NOT 296
+#define RESERVED 297
+#define IDENTIFIER 298
+#define NATURAL 299
+#define DECIMAL 300
+#define INTEGER 301
+#define DOUBLE 302
+#define STRLIT 303
+#define BOOLLIT 304
+#define XOR 305
 #define WITHOUT_ELSE 306
 
 /* Value type.  */

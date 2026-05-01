@@ -164,29 +164,29 @@ Terminals, with rules where they appear
     ASSIGN (280) 46 50
     OR (281) 52
     AND (282) 54
-    XOR (283) 56
-    EQ (284) 58
-    NE (285) 59
-    LT (286) 61
-    LE (287) 62
-    GT (288) 63
-    GE (289) 64
-    LSHIFT (290) 66
-    RSHIFT (291) 67
-    PLUS (292) 69 78
-    MINUS (293) 70 76
-    STAR (294) 72
-    DIV (295) 73
-    MOD (296) 74
-    NOT (297) 77
-    RESERVED (298)
-    IDENTIFIER <lexeme> (299) 1 9 10 11 12 16 17 21 22 23 44 45 46 47 50 80 81 82 83 86
-    NATURAL <lexeme> (300) 87
-    DECIMAL <lexeme> (301) 88
-    INTEGER <lexeme> (302)
-    DOUBLE <lexeme> (303) 15
-    STRLIT <lexeme> (304) 36
-    BOOLLIT <lexeme> (305) 89
+    EQ (283) 58
+    NE (284) 59
+    LT (285) 61
+    LE (286) 62
+    GT (287) 63
+    GE (288) 64
+    LSHIFT (289) 66
+    RSHIFT (290) 67
+    PLUS (291) 69 78
+    MINUS (292) 70 76
+    STAR (293) 72
+    DIV (294) 73
+    MOD (295) 74
+    NOT (296) 77
+    RESERVED (297)
+    IDENTIFIER <lexeme> (298) 1 9 10 11 12 16 17 21 22 23 44 45 46 47 50 80 81 82 83 86
+    NATURAL <lexeme> (299) 87
+    DECIMAL <lexeme> (300) 88
+    INTEGER <lexeme> (301)
+    DOUBLE <lexeme> (302) 15
+    STRLIT <lexeme> (303) 36
+    BOOLLIT <lexeme> (304) 89
+    XOR <lexeme> (305) 56
     WITHOUT_ELSE (306)
 
 
@@ -1287,7 +1287,7 @@ State 67
    80 PostfixExpr: IDENTIFIER • DOTLENGTH
    81            | IDENTIFIER • LPAR ArgListOpt RPAR
    82            | IDENTIFIER • LPAR error RPAR
-   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD]
+   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD, XOR]
 
     LPAR       shift, and go to state 105
     DOTLENGTH  shift, and go to state 106
@@ -1382,7 +1382,7 @@ State 77
 
 State 78
 
-   60 EqExpr: RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   60 EqExpr: RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, XOR]
    61 RelExpr: RelExpr • LT ShiftExpr
    62        | RelExpr • LE ShiftExpr
    63        | RelExpr • GT ShiftExpr
@@ -1398,7 +1398,7 @@ State 78
 
 State 79
 
-   65 RelExpr: ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE]
+   65 RelExpr: ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, XOR]
    66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
    67          | ShiftExpr • RSHIFT AddExpr
 
@@ -1410,7 +1410,7 @@ State 79
 
 State 80
 
-   68 ShiftExpr: AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT]
+   68 ShiftExpr: AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR]
    69 AddExpr: AddExpr • PLUS MulExpr
    70        | AddExpr • MINUS MulExpr
 
@@ -1422,7 +1422,7 @@ State 80
 
 State 81
 
-   71 AddExpr: MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS]
+   71 AddExpr: MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR]
    72 MulExpr: MulExpr • STAR UnaryExpr
    73        | MulExpr • DIV UnaryExpr
    74        | MulExpr • MOD UnaryExpr
@@ -1841,7 +1841,7 @@ State 101
    80 PostfixExpr: IDENTIFIER • DOTLENGTH
    81            | IDENTIFIER • LPAR ArgListOpt RPAR
    82            | IDENTIFIER • LPAR error RPAR
-   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD]
+   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD, XOR]
 
     LPAR       shift, and go to state 105
     DOTLENGTH  shift, and go to state 106
@@ -2978,7 +2978,7 @@ State 148
 
 State 149
 
-   58 EqExpr: EqExpr EQ RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   58 EqExpr: EqExpr EQ RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, XOR]
    61 RelExpr: RelExpr • LT ShiftExpr
    62        | RelExpr • LE ShiftExpr
    63        | RelExpr • GT ShiftExpr
@@ -2994,7 +2994,7 @@ State 149
 
 State 150
 
-   59 EqExpr: EqExpr NE RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   59 EqExpr: EqExpr NE RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, XOR]
    61 RelExpr: RelExpr • LT ShiftExpr
    62        | RelExpr • LE ShiftExpr
    63        | RelExpr • GT ShiftExpr
@@ -3010,7 +3010,7 @@ State 150
 
 State 151
 
-   61 RelExpr: RelExpr LT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE]
+   61 RelExpr: RelExpr LT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, XOR]
    66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
    67          | ShiftExpr • RSHIFT AddExpr
 
@@ -3022,7 +3022,7 @@ State 151
 
 State 152
 
-   62 RelExpr: RelExpr LE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE]
+   62 RelExpr: RelExpr LE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, XOR]
    66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
    67          | ShiftExpr • RSHIFT AddExpr
 
@@ -3034,7 +3034,7 @@ State 152
 
 State 153
 
-   63 RelExpr: RelExpr GT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE]
+   63 RelExpr: RelExpr GT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, XOR]
    66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
    67          | ShiftExpr • RSHIFT AddExpr
 
@@ -3046,7 +3046,7 @@ State 153
 
 State 154
 
-   64 RelExpr: RelExpr GE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE]
+   64 RelExpr: RelExpr GE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, XOR]
    66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
    67          | ShiftExpr • RSHIFT AddExpr
 
@@ -3058,7 +3058,7 @@ State 154
 
 State 155
 
-   66 ShiftExpr: ShiftExpr LSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT]
+   66 ShiftExpr: ShiftExpr LSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR]
    69 AddExpr: AddExpr • PLUS MulExpr
    70        | AddExpr • MINUS MulExpr
 
@@ -3070,7 +3070,7 @@ State 155
 
 State 156
 
-   67 ShiftExpr: ShiftExpr RSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT]
+   67 ShiftExpr: ShiftExpr RSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR]
    69 AddExpr: AddExpr • PLUS MulExpr
    70        | AddExpr • MINUS MulExpr
 
@@ -3082,7 +3082,7 @@ State 156
 
 State 157
 
-   69 AddExpr: AddExpr PLUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS]
+   69 AddExpr: AddExpr PLUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR]
    72 MulExpr: MulExpr • STAR UnaryExpr
    73        | MulExpr • DIV UnaryExpr
    74        | MulExpr • MOD UnaryExpr
@@ -3096,7 +3096,7 @@ State 157
 
 State 158
 
-   70 AddExpr: AddExpr MINUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS]
+   70 AddExpr: AddExpr MINUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, EQ, NE, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR]
    72 MulExpr: MulExpr • STAR UnaryExpr
    73        | MulExpr • DIV UnaryExpr
    74        | MulExpr • MOD UnaryExpr

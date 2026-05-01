@@ -79,6 +79,7 @@ typedef enum {
     TYPE_UNDEF,
     TYPE_CLASS, // auxiliar para ignorar o tipo de class
     TYPE_DECL, // auxiliar para ignorar o tipo de class
+    TYPE_NULL, // aux
     
 } sem_type;
 
@@ -123,6 +124,7 @@ struct node {
     sem_type type;
     int line;    
     int column; 
+    int visit; // flag used to mark a method as a duplicated method
     struct node_list *children;
 };
 
@@ -143,4 +145,5 @@ struct node *addChildren(struct programs_list *programs);
 void addFront(struct node *parent, struct node *auxTree);
 int is_operation(enum category c);
 int ignore(sem_type c);
+int ignoreOp(enum category c);
 #endif

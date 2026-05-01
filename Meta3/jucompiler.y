@@ -18,11 +18,11 @@ struct node *ast;
 %token BOOL INT VOID STRING LPAR RPAR LSQ RSQ
 %token IF ELSE WHILE RETURN PRINT PARSEINT
 %token DOTLENGTH ASSIGN
-%token OR AND XOR EQ NE LT LE GT GE
+%token OR AND EQ NE LT LE GT GE
 %token LSHIFT RSHIFT PLUS MINUS STAR DIV MOD NOT
 %token RESERVED
 
-%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT
+%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT XOR
 
 %type<node> program DeclList MethodDecl FieldDecl IdentList IdentListVar Type
 %type<node> MethodHeader FormalParamOpt FormalParams NormalParams MethodBody
@@ -267,6 +267,7 @@ Statement: LBRACE StmtList RBRACE   {
                                         else addchild($$, newnode(Block, NULL) );
                                         }
          | RETURN ExprOpt SEMICOLON {   $$ = newnode(Return, NULL); 
+                                        $$->line = @1.first_line; $$->column = @1.first_column;
                                         if($2 != NULL) addchild($$, $2); 
                                         }
          | ExprStmt SEMICOLON       {   $$ = $1 ; }
@@ -318,6 +319,8 @@ ExprOpt: Expr                       {   $$ = $1 ;
 
 ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                     {   $$ = newnode(Call, NULL);
+                                        $$->line   = @1.first_line;    
+                                        $$->column = @1.first_column;
                                         struct node *id = newnode(Identifier, $1);
                                         id->line   = @1.first_line;
                                         id->column = @1.first_column;
@@ -336,6 +339,8 @@ ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR
                                         }
         | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
                                     {   $$ = newnode(ParseArgs, NULL);
+                                        $$->line = @1.first_line;
+                                        $$->column = @1.first_column;
                                         struct node *id = newnode(Identifier, $3);
                                         id->line   = @3.first_line;
                                         id->column = @3.first_column;
@@ -352,6 +357,8 @@ Expr: AssignExpr                    {   $$ = $1 ;
 
 AssignExpr: IDENTIFIER ASSIGN AssignExpr
                                     {   $$ = newnode(Assign, NULL);
+                                        $$->line =  @2.first_line;
+                                        $$->column =  @2.first_column;
                                         struct node *id = newnode(Identifier, $1);
                                         id->line   = @1.first_line;
                                         id->column = @1.first_column;
@@ -375,7 +382,9 @@ AndExpr: AndExpr AND XorExpr        {   $$ = newnode(And, NULL);
        | XorExpr                    {   $$ = $1; }
     ;
 
-XorExpr: XorExpr XOR EqExpr         {   $$ = newnode(Xor, NULL); 
+XorExpr: XorExpr XOR EqExpr         {   $$ = newnode(Xor, $2); 
+                                        $$->line = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
@@ -482,6 +491,8 @@ PostfixExpr: IDENTIFIER DOTLENGTH
 
            | IDENTIFIER LPAR ArgListOpt RPAR
                                     {   $$ = newnode(Call, NULL);
+                                        $$->line   = @1.first_line;    
+                                        $$->column = @1.first_column;
                                         struct node *id = newnode(Identifier, $1);
                                         id->line   = @1.first_line;
                                         id->column = @1.first_column;
@@ -493,6 +504,8 @@ PostfixExpr: IDENTIFIER DOTLENGTH
             
            | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
                                     {   $$ = newnode(ParseArgs, NULL);
+                                        $$->line = @1.first_line;
+                                        $$->column = @1.first_column;
                                         struct node *aux =  newnode(Identifier, $3);
                                         aux->line =  @3.first_line; 
                                         aux->column = @3.first_column;

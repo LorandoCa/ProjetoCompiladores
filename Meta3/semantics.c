@@ -26,6 +26,7 @@ const char *op_name(enum category c) {
         case Div: return "/";
         case Mod: return "%";
         case Assign: return "=";
+        case Xor: return "^";
         default:  return "?";
     }
 }
@@ -232,26 +233,34 @@ sem_type check_expression(struct node *n) {
     
     struct symbol_list *local = stack->list; // o primeiro elemento na pilha pertence ao metodo
     struct symbol_list *class_sym = listaGlobal;
-    if (n == NULL) return TYPE_UNDEF;
+    if (n == NULL) return TYPE_NULL;
 
     sem_type result = TYPE_UNDEF;
 
     switch (n->category) {
 
         // ── Literais ──────────────────────────────────────────────────────────
-        case Natural:
-            // Verifica overflow: NATURAL > 2147483647 → erro
-            // (o token está em n->token como string)
-            if (strlen(n->token) > 10 ||
-                (strlen(n->token) == 10 && strcmp(n->token, "2147483647") > 0)) {
-                char msg[256];
-                snprintf(msg, sizeof msg, "Number %s out of bounds", n->token);
-                printf("Line %d, col %d: %s\n", n->line, n->column, msg);
-                result = TYPE_UNDEF;
-            } else {
-                result = TYPE_INT;
+        case Natural: {
+            // Remove underscores antes de converter
+            char clean[256];
+            int j = 0;
+            for (int i = 0; n->token[i] != '\0'; i++)
+                if (n->token[i] != '_') clean[j++] = n->token[i];
+            clean[j] = '\0';
+
+            errno = 0;
+            long val = strtol(clean, NULL, 10);
+            //printf("token='%s' len=%zu\n", n->token, strlen(n->token));
+            //printf("clean='%s' len=%zu\n", clean, strlen(clean));
+            if (errno == ERANGE || val > 2147483647L || val < -2147483648L) {
+                printf("Line %d, col %d: Number %s out of bounds\n",
+                    n->line, n->column, n->token);
+                semantic_errors++;
             }
+            result = TYPE_INT;
+            n->type = result;
             break;
+        }
 
         case Decimal: {
             errno = 0;
@@ -312,22 +321,25 @@ sem_type check_expression(struct node *n) {
             sem_type lt = check_expression(id_node);
             sem_type rt = check_expression(rhs_node );
 
+            //printf("%d aqui a categ\n",rhs_node->category);
+
             if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                        n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
-                result = lt; break;
+                result = lt; 
+                break;
             }
 
             // Compatibilidade: int←int, double←double, double←int, int←double
-            int numeric = (lt == TYPE_INT || lt == TYPE_DOUBLE) &&
-                          (rt == TYPE_INT || rt == TYPE_DOUBLE);
+            int numeric = (lt == TYPE_DOUBLE && rt == TYPE_INT) ||
+                          (lt == TYPE_DOUBLE && rt == TYPE_DOUBLE);
             if (lt == rt || numeric) {
                 result = lt;
             } else {
-                printf("Line %d, col %d: Incompatible type %s in = statement\n",
-                       n->line, n->column, type_name(rt));
-                result = TYPE_UNDEF;
+                printf("Line %d, col %d: Operator = cannot be applied to types %s, %s\n",
+                       n->line, n->column, type_name(lt), type_name(rt));
+                result = lt;
             }
             break;
         }
@@ -355,14 +367,15 @@ sem_type check_expression(struct node *n) {
                 (rt == TYPE_INT || rt == TYPE_DOUBLE)) {
                 result = (lt == TYPE_DOUBLE || rt == TYPE_DOUBLE)
                          ? TYPE_DOUBLE : TYPE_INT;
+                //printf("%d heree\n", result);
             } else {
                 if (lt != TYPE_INT && lt != TYPE_DOUBLE && rt != TYPE_INT && rt != TYPE_DOUBLE)
                     printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                            n->line, n->column, op_name(n->category),
                            type_name(lt), type_name(rt));
                 else
-                    printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
-                           n->line, n->column, op_name(n->category),
+                    printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                           n->line, n->column, op_name(n->category),type_name(lt),
                            (lt != TYPE_INT && lt != TYPE_DOUBLE)
                            ? type_name(lt) : type_name(rt));
                 result = TYPE_UNDEF;
@@ -380,11 +393,11 @@ sem_type check_expression(struct node *n) {
 
             if (lt == TYPE_INT && rt == TYPE_INT) {
                 result = TYPE_INT;
-            } else {
+            }else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                        n->line, n->column, n->token,
                        type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                result = TYPE_INT;
             }
             break;
         }
@@ -493,8 +506,13 @@ sem_type check_expression(struct node *n) {
             // O filho tem de ser String[] para ter sentido, mas o enunciado
             // diz que .length devolve sempre int
             struct node *id_node  = nth_child(n, 0); // Identifier(args)
-            id_node->type = TYPE_STRING_ARRAY;
-            result = TYPE_INT;
+
+            id_node->type = check_expression(id_node);
+            if(id_node->type != TYPE_STRING_ARRAY){
+                printf("Line %d, col %d: Operator .length cannot be applied to type %s\n", 
+                id_node->line , (int)(id_node->column + strlen(id_node->token)), type_name(id_node->type));
+            }
+            result = TYPE_INT; // Forçado 
             break;
         }
 
@@ -504,9 +522,13 @@ sem_type check_expression(struct node *n) {
             struct node *id_node  = nth_child(n, 0); // Identifier(args)
             struct node *idx_node = nth_child(n, 1); // Natural(0)
             
-            check_expression(id_node);
-            idx_node->type = TYPE_INT; // força int, não precisa de check_expression
+            id_node->type = check_expression(id_node);
+            idx_node->type = check_expression(idx_node); 
             
+            if(idx_node->type != TYPE_INT || id_node->type != TYPE_STRING_ARRAY )
+                printf("Line %d, col %d: Operator Integer.parseInt cannot be applied to types %s, %s\n", 
+                n->line, n->column, type_name(id_node->type), type_name(idx_node->type));
+
             result = TYPE_INT;
             n->type = result;
             break;
@@ -550,7 +572,7 @@ struct symbol_list_stack *newStack(){
     return stack;
 }
 
-void pre_check_MethodHead(struct node *head){
+int pre_check_MethodHead(struct node *head){ // devolve 1 se adicionou o novo metodo ou 0 se nao 
     // filho 1: Type ou Void
     // filho 2: Identifier
     struct node *typeNode   = head->children->node;
@@ -567,7 +589,15 @@ void pre_check_MethodHead(struct node *head){
     //printf("%s\n", args_str);
 
     idNode->type = TYPE_DECL;
-    insert_method_symbol(listaGlobal, idNode->token, ret_type, head); 
+    struct symbol_list *res = insert_method_symbol(listaGlobal, idNode->token, ret_type, head); 
+    if(res == NULL){
+        printf("Line %d, col %d: Symbol %s%s already defined\n",
+                       idNode->line, idNode->column, idNode->token, args_str);
+        head->visit = 0;
+        return 0;
+    }
+
+    return 1;
 
 }
 
@@ -582,34 +612,8 @@ void check_MethodHead(struct node *head){
     struct node *paramsNode = head->children->next->next->node;
 
 
-    char *methodName = (char*) malloc(1024 * sizeof(char));
-    sprintf(methodName, "===== Method %s(", idNode->token);
-
-    // iterar pelos ParamDecl dentro de MethodParams
-    struct node_list *param = paramsNode->children;
-    while(param != NULL && param->node != NULL){
-        // primeiro filho de ParamDecl é o Type (ou StringArray)
-        sem_type tp = param->node->children->node->type;
-        char *type = type_name(tp);
-        strcat(methodName, type);
-
-        if(param->next != NULL)
-            strcat(methodName, ", ");
-
-        param = param->next;
-    }
-
-    strcat(methodName, ") Symbol Table =====");
-
     //printf("Printing id %s\n", idNode->token);
     sem_type ret_type = category_to_type(typeNode->category);
-
-    char *args_str= (char*)malloc(64*sizeof(char));
-
-    fill_args_from_header(head, args_str); // preenche args primeiro
-    head->args = args_str;
-
-    idNode->type = TYPE_DECL;
     
     //Nao é preciso porque ja foi adicionado no pre_check
     //insert_symbol(listaGlobal, idNode->token, ret_type, head, 0); // Simbolo inserido na tabela de simbolos
@@ -649,6 +653,8 @@ void check_MethodHead(struct node *head){
 
 }
 
+
+
 void check_statement(struct node *n) {
     if(n == NULL) return;
 
@@ -659,7 +665,7 @@ void check_statement(struct node *n) {
         case While: {
             // filho 0 = condição (expressão booleana)
             sem_type ct = check_expression(nth_child(n, 0));
-            if(ct != TYPE_BOOL && ct != TYPE_UNDEF) {
+            if(ct != TYPE_BOOL) {
                 printf("Line %d, col %d: Incompatible type %s in %s statement\n",
                        nth_child(n,0)->line, nth_child(n,0)->column,
                        type_name(ct),
@@ -673,7 +679,7 @@ void check_statement(struct node *n) {
             break;
         }
 
-        case Return: {
+        case Return: { // ponto fraco
             struct node *expr = nth_child(n, 0); // pode ser NULL
             // tipo de retorno esperado está no topo da stack como "return"
             struct symbol_list *ret = search_symbol(stack->list, "return");
@@ -681,6 +687,11 @@ void check_statement(struct node *n) {
             if(expected == TYPE_VOID) {
                 if(expr != NULL) {
                     sem_type rt = check_expression(expr);
+                    if(rt == TYPE_NULL) { // Quando nao é passada nenhuma expressao no return
+                        printf("Line %d, col %d: Incompatible type %s in return statement\n",
+                               n->line, n->column, type_name(rt));
+                        semantic_errors++;
+                    }
                     if(rt != TYPE_UNDEF) {
                         printf("Line %d, col %d: Incompatible type %s in return statement\n",
                                expr->line, expr->column, type_name(rt));
@@ -702,8 +713,7 @@ void check_statement(struct node *n) {
                         semantic_errors++;
                     }
 
-                    int numeric = (expected == TYPE_INT || expected == TYPE_DOUBLE)
-                               && (rt == TYPE_INT || rt == TYPE_DOUBLE);
+                    int numeric = !(expected == TYPE_INT && rt == TYPE_DOUBLE);
                     if(rt != TYPE_UNDEF && rt != expected && !numeric) {
                         printf("Line %d, col %d: Incompatible type %s in return statement\n",
                                expr->line, expr->column, type_name(rt));
@@ -721,16 +731,16 @@ void check_statement(struct node *n) {
             sem_type res = check_expression(expr);
 
 
-            if(res == TYPE_UNDEF){
+            if(res == TYPE_UNDEF || res == TYPE_STRING_ARRAY){
                 if(expr->category  != Call){
                     
-                    printf("Line %d, col %d: Incompatible type undef in System.out.print statement\n",
-                                expr->line, expr->column);
+                    printf("Line %d, col %d: Incompatible type %s in System.out.print statement\n",
+                                expr->line, expr->column, type_name(res) ) ;
                 
                 }else{
                     struct node *expr_child = nth_child(expr, 0); // identifier
-                    printf("Line %d, col %d: Incompatible type undef in System.out.print statement\n",
-                                    expr_child->line, expr_child->column);
+                    printf("Line %d, col %d: Incompatible type %s in System.out.print statement\n",
+                                expr_child->line, expr_child->column, type_name(res) ) ;
                 }
             }
             break;
@@ -793,9 +803,13 @@ void check_MethodDecl(struct node *Decl){
     struct node *header = nth_child(Decl, 0);
     struct node *body   = nth_child(Decl, 1);
 
-    check_MethodHead(header); // constrói tabela local e empurra para a stack
+    if(header->visit){ // if its not a duuplicated method
 
-    check_MethodBody(body);   // usa stack->list como tabela local
+        check_MethodHead(header); // constrói tabela local e empurra para a stack
+
+        check_MethodBody(body);   // usa stack->list como tabela local
+
+    }
 
 }
 
@@ -826,7 +840,10 @@ int check_program(struct node *program) {
             } 
         }
         if(decl->category == MethodDecl) {
-            pre_check_MethodHead(decl->children->node);
+            int res = pre_check_MethodHead(decl->children->node);
+            if(!res){
+                decl->visit = 0;
+            }
         }
 
         child = child->next;
@@ -869,6 +886,7 @@ struct symbol_list *insert_symbol(struct symbol_list *table, char *identifier, s
     //printf("%s\n", identifier);
     return new;
 }
+
 
 // para métodos - permite overloading (mesmo nome, args diferentes)
 struct symbol_list *insert_method_symbol(struct symbol_list *table, char *identifier, sem_type type, struct node *node) {
@@ -940,13 +958,14 @@ void print_symbol_tables(char *class_name) {
         }
         sym = sym->next;
     }
+    printf("\n");
 
     // Tabelas dos métodos
     struct symbol_list_stack *scope = functionsList;
     while (scope != NULL) {
         char *args = (scope->header != NULL && scope->header->args != NULL) 
                     ? scope->header->args : "()";
-        printf("\n===== Method %s%s Symbol Table =====\n", scope->identifier, args);
+        printf("===== Method %s%s Symbol Table =====\n", scope->identifier, args);
         struct symbol_list *s = scope->list->next;
         while (s != NULL) {
             if (s->param)
@@ -955,6 +974,8 @@ void print_symbol_tables(char *class_name) {
                 printf("%s\t\t%s\n", s->identifier, type_name(s->type));
             s = s->next;
         }
+        printf("\n");
+
         scope = scope->next;
     }
 }

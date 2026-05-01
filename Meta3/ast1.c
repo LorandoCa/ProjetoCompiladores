@@ -9,6 +9,7 @@ struct node *newnode(enum category category, char *token) {
     new->token = token;
     new->args = NULL;
     new->type = TYPE_UNDEF;
+    new->visit = 1;
     new->children = malloc(sizeof(struct node_list));
     new->children->node = NULL;
     new->children->next = NULL;
@@ -125,4 +126,16 @@ int ignore(sem_type c){
     default:
         return 0;
     }
+}
+
+int ignoreOp(enum category c){
+
+    switch (c)
+    {
+     case Xor:
+        return 1;
+    default:
+        return 0;
+    }
+
 }

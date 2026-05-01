@@ -1336,7 +1336,7 @@ YY_RULE_SETUP
 case 39:
 YY_RULE_SETUP
 #line 243 "jucompiler.l"
-{ if (printall) PrintMatch("XOR"); return XOR; }
+{ if (printall) PrintMatch("XOR"); PASS_TOKEN(); return XOR; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
@@ -2777,10 +2777,48 @@ void yyerror (char *s) {
 }
 
 void show(struct node *no, int depth) {
+    if (no == NULL) return;
+
+    const char *name = category_names[no->category];
+    if (name == NULL) name = "UNKNOWN";
+
+    int next_depth = depth;
+
+    if(strcmp(name, "Args") != 0 && strcmp(name, "Dummy") != 0) {
+        
+        for (int i = 0; i < 2 * depth; i++) printf(".");
+
+        if (no->token != NULL && !ignoreOp(no->category)) {
+            if (no->args != NULL)
+                printf("%s(%s) - %s\n", name, no->token, no->args);
+            else if (no->visit == 1 && is_operation(no->category) && !ignore(no->type))
+                printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
+            else
+                printf("%s(%s)\n", name, no->token);
+        } else {
+            if (no->visit == 1 && is_operation(no->category) && !ignore(no->type))
+                printf("%s - %s\n", name, type_name(no->type));
+            else
+                printf("%s\n", name);
+        }
+        
+        next_depth = depth + 1;
+    }
+
+    struct node_list *atual = no->children;
+    while (atual != NULL) {
+        if (atual->node != NULL) {
+            if (!no->visit) atual->node->visit = 0;
+            show(atual->node, next_depth);
+        }
+        atual = atual->next;
+    }
+}
+/*
+void show(struct node *no, int depth) {
     if (no == NULL){
         return;
     }
-
 
     const char *name = category_names[no->category];
 
@@ -2791,7 +2829,7 @@ void show(struct node *no, int depth) {
 
     // Só imprime e aumenta a profundidade se não for Args nem Dummy
     if(strcmp(name, "Args") != 0 && strcmp(name, "Dummy") != 0) {
-        
+
         for (int i = 0; i < 2 * depth; i++) printf(".");
 
         if (no->token != NULL) {
@@ -2807,16 +2845,18 @@ void show(struct node *no, int depth) {
             else
                 printf("%s\n", name);
         }
-        
+
         next_depth = depth + 1;
     }
     // Chamada recursiva sempre usa o próximo nível de profundidade calculado
-    struct node_list *atual = no->children;
-    while (atual != NULL) {
-        show(atual->node, next_depth);
-        atual = atual->next;
-    }
-}
+    //if(no->visit == 1){
+        struct node_list *atual = no->children;
+        while (atual != NULL) {
+            show(atual->node, next_depth);
+            atual = atual->next;
+        }
+   // }
+}*/
 
 
 int main(int argc, char *argv[]) {
@@ -2825,7 +2865,7 @@ int main(int argc, char *argv[]) {
     int syntatic_analisis = 0;
     int semantic_analisis = 0;
 
-    if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'S' && argv[1][2] == '\0') {
+    if ((argc > 1 && argv[1][0] == '-' && argv[1][1] == 'S' && argv[1][2] == '\0') || argc == 1) {
         printerrors = 1;
         syntatic_analisis = 1;
         semantic_analisis = 1;
@@ -2850,7 +2890,7 @@ int main(int argc, char *argv[]) {
     }
 
     if(errors == 0 && printTree == 1 ){
-        printf("\n");
+        //printf("\n");
         show(ast, 0);
     }
 
