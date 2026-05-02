@@ -39,6 +39,7 @@ struct symbol_list_stack *newStack();
 
 //auxiliar functions
 int pre_check_MethodHead(struct node *head);
+void pre_check_parameters(struct node *MethodParams);
 void fill_args_from_header(struct node *header, char *args);
 static int count_children(struct node *n) ;
 static struct node *nth_child(struct node *n, int idx);

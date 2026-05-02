@@ -221,8 +221,8 @@ ELSE else
 
 "++"  { if (printall) PrintMatch("RESERVED(++)"); return RESERVED; }
 "--"  { if (printall) PrintMatch("RESERVED(--)"); return RESERVED; }
-"=="  { if (printall) PrintMatch("EQ"); return EQ; }
-"!="  { if (printall) PrintMatch("NE"); return NE; }
+"=="  { if (printall) PrintMatch("EQ"); PASS_TOKEN(); return EQ; }
+"!="  { if (printall) PrintMatch("NE"); PASS_TOKEN(); return NE; }
 ">="  { if (printall) PrintMatch("GE"); return GE; }
 "<="  { if (printall) PrintMatch("LE"); return LE; }
 ">>"  { if (printall) PrintMatch("RSHIFT"); return RSHIFT; }

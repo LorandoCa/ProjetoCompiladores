@@ -1246,12 +1246,12 @@ YY_RULE_SETUP
 case 21:
 YY_RULE_SETUP
 #line 224 "jucompiler.l"
-{ if (printall) PrintMatch("EQ"); return EQ; }
+{ if (printall) PrintMatch("EQ"); PASS_TOKEN(); return EQ; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 225 "jucompiler.l"
-{ if (printall) PrintMatch("NE"); return NE; }
+{ if (printall) PrintMatch("NE"); PASS_TOKEN(); return NE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP

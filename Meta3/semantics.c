@@ -27,6 +27,10 @@ const char *op_name(enum category c) {
         case Mod: return "%";
         case Assign: return "=";
         case Xor: return "^";
+        case Eq: return "==";
+        case Ne: return "!=";
+        case Lshift: return "<<";
+        case Rshift: return ">>";
         default:  return "?";
     }
 }
@@ -178,13 +182,21 @@ struct symbol_list *check_parameters(struct node *MethodParams, struct symbol_li
 
         ParamDecl->type = TYPE_UNDEF;
         ID_node->type = TYPE_DECL;
+
+        if (ID_node->token != NULL && strcmp(ID_node->token, "_") == 0) { // Caso especial 
+                /*printf("Line %d, col %d: %s is reserved\n",
+                       ID_node->line, ID_node->column, ID_node->token);*/
+                 semantic_errors++;
+                children_atual = children_atual->next;
+                continue;
+        }
         
         struct symbol_list *result = insert_symbol(symbol_table_prov, ID_node->token, category_to_type(type_node->category), ID_node, 1);
 
         if(result == NULL) {
             // TODO 
-           printf("Line %d, col %d: Symbol %s already defined\n",
-                       ID_node->line, ID_node->column, ID_node->token);
+          /* printf("Line %d, col %d: Symbol %s already defined\n",
+                       ID_node->line, ID_node->column, ID_node->token);*/
                 semantic_errors++;
         }
 
@@ -295,6 +307,13 @@ sem_type check_expression(struct node *n) {
 
         // ── Identificador ─────────────────────────────────────────────────────
         case Identifier: {
+
+            if (n->token != NULL && strcmp(n->token, "_") == 0) {
+                printf("Line %d, col %d: %s is reserved\n",
+                       n->line, n->column, n->token);
+                n->type = TYPE_DECL;
+                result =   n->type;
+            }
 
             // Procura primeiro na tabela local, depois na da classe
             struct symbol_list *sym = search_symbol(local, n->token);
@@ -423,30 +442,37 @@ sem_type check_expression(struct node *n) {
 
         // ── Operadores relacionais: ==, != ────────────────────────────────────
         // int/double entre si, ou mesmo tipo
-        case Eq: case Ne: {
-            sem_type lt = check_expression(nth_child(n, 0) );
-            sem_type rt = check_expression(nth_child(n, 1) );
+       case Eq: case Ne: {
+            sem_type lt = check_expression(nth_child(n, 0));
+            sem_type rt = check_expression(nth_child(n, 1));
+
+            n->type = TYPE_NULL;
 
             if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, op_name(n->category),
-                       type_name(lt), type_name(rt));
-                result = TYPE_UNDEF; break;
+                    n->line, n->column, op_name(n->category),
+                    type_name(lt), type_name(rt));
+                result = TYPE_BOOL; break;
             }
 
             int numeric = (lt == TYPE_INT || lt == TYPE_DOUBLE) &&
-                          (rt == TYPE_INT || rt == TYPE_DOUBLE);
-            if (lt == rt || numeric) {
+              (rt == TYPE_INT || rt == TYPE_DOUBLE);
+
+            if (lt == TYPE_STRING_ARRAY || rt == TYPE_STRING_ARRAY) {
+                printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                    n->line, n->column, op_name(n->category),
+                    type_name(lt), type_name(rt));
+                result = TYPE_BOOL;
+            } else if (lt == rt || numeric) {
                 result = TYPE_BOOL;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
-                       n->line, n->column, n->token,
-                       type_name(lt), type_name(rt));
-                result = TYPE_UNDEF;
+                    n->line, n->column, n->token,
+                    type_name(lt), type_name(rt));
+                result = TYPE_BOOL;
             }
             break;
         }
-
         // ── Operadores relacionais: <, <=, >, >= ──────────────────────────────
         // Apenas int e double
         case Lt: case Le: case Gt: case Ge: {
@@ -583,6 +609,9 @@ int pre_check_MethodHead(struct node *head){ // devolve 1 se adicionou o novo me
     sem_type ret_type = category_to_type(typeNode->category);
     char *args_str= (char*)malloc(64*sizeof(char));
 
+    struct node *params_node = nth_child(head, 2);
+    pre_check_parameters(params_node);
+
     fill_args_from_header(head, args_str); // preenche args primeiro
     head->args = args_str;
 
@@ -599,6 +628,45 @@ int pre_check_MethodHead(struct node *head){ // devolve 1 se adicionou o novo me
 
     return 1;
 
+}
+
+void pre_check_parameters(struct node *MethodParams) {
+    struct symbol_list *temp = calloc(1, sizeof(struct symbol_list)); // lista temporária local
+    struct node_list *children_atual = MethodParams->children;
+
+    while (children_atual != NULL && children_atual->node != NULL) {
+        struct node *ParamDecl = children_atual->node;
+        struct node *type_node = ParamDecl->children->node;
+        struct node *ID_node   = ParamDecl->children->next->node;
+
+        if (ID_node->token != NULL && strcmp(ID_node->token, "_") == 0) {
+            printf("Line %d, col %d: Symbol %s is reserved\n",
+                   ID_node->line, ID_node->column, ID_node->token);
+            semantic_errors++;
+            children_atual = children_atual->next;
+            continue;
+        }
+
+        if (search_symbol(temp, ID_node->token) != NULL) {
+            printf("Line %d, col %d: Symbol %s already defined\n",
+                   ID_node->line, ID_node->column, ID_node->token);
+            semantic_errors++;
+        } else {
+            insert_symbol(temp, ID_node->token, category_to_type(type_node->category), ID_node, 1);
+        }
+
+        children_atual = children_atual->next;
+    }
+
+    // liberta a lista temporária
+    struct symbol_list *s = temp->next;
+    while (s != NULL) {
+        struct symbol_list *next = s->next;
+        free(s->identifier);
+        free(s);
+        s = next;
+    }
+    free(temp);
 }
 
 
@@ -774,10 +842,19 @@ void check_MethodBody(struct node *body){
     struct node_list *child = body->children;
 
     while(child != NULL && child->node != NULL) {
+
         if(child->node->category == VarDecl){
             // Tratar declaracao de variaveis
             struct symbol_list *local = stack->list;
             struct node *id_node = child->node->children->next->node;
+
+            if (id_node->token != NULL && strcmp(id_node->token, "_") == 0) { // Caso especial 
+                printf("Line %d, col %d: Symbol %s is reserved\n",
+                       id_node->line, id_node->column, id_node->token);
+                id_node->type = TYPE_DECL;
+                child = child->next;
+                continue;
+            }
 
             sem_type t = category_to_type(child->node->children->node->category);
             id_node->type = TYPE_DECL;
@@ -830,6 +907,14 @@ int check_program(struct node *program) {
             sem_type t = category_to_type(type_node->category);
 
             id_node->type = TYPE_DECL;
+
+            if (id_node->token != NULL && strcmp(id_node->token, "_") == 0) { // Caso especial 
+                printf("Line %d, col %d: Symbol %s is reserved\n",
+                       id_node->line, id_node->column, id_node->token);
+                
+                child = child->next;
+                continue;
+            }
 
             if(search_symbol(listaGlobal, id_node->token) != NULL) {
                 printf("Line %d, col %d: Symbol %s already defined\n",

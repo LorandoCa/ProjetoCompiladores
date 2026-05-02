@@ -78,7 +78,7 @@ typedef enum {
     TYPE_STRING_ARRAY,
     TYPE_UNDEF,
     TYPE_CLASS, // auxiliar para ignorar o tipo de class
-    TYPE_DECL, // auxiliar para ignorar o tipo de class
+    TYPE_DECL, // auxiliar para ignorar o tipo de Decl
     TYPE_NULL, // aux
     
 } sem_type;

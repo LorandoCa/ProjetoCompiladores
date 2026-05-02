@@ -121,7 +121,7 @@ int is_operation(enum category c) {
 int ignore(sem_type c){
     switch (c)
     {
-     case TYPE_CLASS: case TYPE_DECL:
+     case TYPE_CLASS: case TYPE_DECL: case TYPE_NULL:
         return 1;
     default:
         return 0;
@@ -132,8 +132,9 @@ int ignoreOp(enum category c){
 
     switch (c)
     {
-     case Xor:
+     case Xor: case Eq: case Ne:
         return 1;
+
     default:
         return 0;
     }

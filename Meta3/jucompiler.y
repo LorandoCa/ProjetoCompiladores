@@ -18,11 +18,11 @@ struct node *ast;
 %token BOOL INT VOID STRING LPAR RPAR LSQ RSQ
 %token IF ELSE WHILE RETURN PRINT PARSEINT
 %token DOTLENGTH ASSIGN
-%token OR AND EQ NE LT LE GT GE
+%token OR AND LT LE GT GE
 %token LSHIFT RSHIFT PLUS MINUS STAR DIV MOD NOT
 %token RESERVED
 
-%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT XOR
+%token<lexeme> IDENTIFIER NATURAL DECIMAL INTEGER DOUBLE STRLIT BOOLLIT XOR EQ NE
 
 %type<node> program DeclList MethodDecl FieldDecl IdentList IdentListVar Type
 %type<node> MethodHeader FormalParamOpt FormalParams NormalParams MethodBody
@@ -192,7 +192,7 @@ NormalParams: Type IDENTIFIER
                   struct node *aux = newnode(ParamDecl, NULL);
                   addchild(aux, $3);
                   struct node *ID_node = newnode(Identifier, $4);
-                  ID_node->line = @2.first_line; ID_node->column = @2.first_column;
+                  ID_node->line = @4.first_line; ID_node->column = @4.first_column;
                   addchild(aux,ID_node);
                   addchild($$, aux); }
     ;
@@ -391,11 +391,15 @@ XorExpr: XorExpr XOR EqExpr         {   $$ = newnode(Xor, $2);
        | EqExpr                     {   $$ = $1; }
     ;
 
-EqExpr: EqExpr EQ RelExpr           {   $$ = newnode(Eq, NULL) ;
+EqExpr: EqExpr EQ RelExpr           {   $$ = newnode(Eq, $2) ;
+                                        $$->line = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
-      | EqExpr NE RelExpr           {   $$ = newnode(Ne, NULL) ;
+      | EqExpr NE RelExpr           {   $$ = newnode(Ne, $2) ;
+                                        $$->line = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
@@ -423,10 +427,14 @@ RelExpr: RelExpr LT ShiftExpr       {   $$ = newnode(Lt, NULL) ;
     ;
 
 ShiftExpr: ShiftExpr LSHIFT AddExpr {   $$ = newnode(Lshift, NULL) ;
+                                        $$->line = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
          | ShiftExpr RSHIFT AddExpr {   $$ = newnode(Rshift, NULL) ;
+                                        $$->line = @2.first_line;
+                                        $$->column = @2.first_column;
                                         addchild($$, $1);
                                         addchild($$, $3);
                                         }
