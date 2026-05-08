@@ -20,6 +20,7 @@ struct var_binding {
     char *ptr;
     sem_type type;
     int is_global;
+    int is_active;
     struct var_binding *next;
 };
 
@@ -205,12 +206,13 @@ static void collect_strings(struct node *node) {
     }
 }
 
-static void append_binding(struct var_binding **head, const char *name, const char *ptr, sem_type type, int is_global) {
+static void append_binding(struct var_binding **head, const char *name, const char *ptr, sem_type type, int is_global, int is_active) {
     struct var_binding *item = (struct var_binding *)calloc(1, sizeof(struct var_binding));
     item->name = xstrdup(name);
     item->ptr = xstrdup(ptr);
     item->type = type;
     item->is_global = is_global;
+    item->is_active = is_active;
     item->next = *head;
     *head = item;
 }
@@ -219,7 +221,7 @@ static struct var_binding *lookup_binding(struct method_ctx *ctx, const char *na
     struct var_binding *cur;
     if (ctx != NULL) {
         for (cur = ctx->locals; cur != NULL; cur = cur->next) {
-            if (strcmp(cur->name, name) == 0) {
+            if (cur->is_active && strcmp(cur->name, name) == 0) {
                 return cur;
             }
         }
@@ -230,6 +232,19 @@ static struct var_binding *lookup_binding(struct method_ctx *ctx, const char *na
         }
     }
     return NULL;
+}
+
+static void activate_binding(struct method_ctx *ctx, const char *name) {
+    struct var_binding *cur;
+    if (ctx == NULL || name == NULL) {
+        return;
+    }
+    for (cur = ctx->locals; cur != NULL; cur = cur->next) {
+        if (strcmp(cur->name, name) == 0) {
+            cur->is_active = 1;
+            return;
+        }
+    }
 }
 
 static char *new_temp(struct method_ctx *ctx) {
@@ -437,7 +452,7 @@ static void collect_globals_and_entry(struct node *program) {
             struct node *id_node = nth_child(decl, 1);
             sem_type type = category_to_type(type_node->category);
             printf("@%s = global %s %s\n", id_node->token, llvm_type(type), default_value(type));
-            append_binding(&global_bindings, id_node->token, str_printf("@%s", id_node->token), type, 1);
+            append_binding(&global_bindings, id_node->token, str_printf("@%s", id_node->token), type, 1, 1);
         } else if (decl != NULL && decl->category == MethodDecl) {
             struct node *header = nth_child(decl, 0);
             struct node *id_node = nth_child(header, 1);
@@ -516,6 +531,7 @@ static struct cg_value emit_expr(struct method_ctx *ctx, struct node *node) {
     char *end_label;
     char *rhs_label;
     const char *lhs_label;
+    const char *rhs_pred_label;
     sem_type left_type;
     sem_type right_type;
 
@@ -594,8 +610,8 @@ static struct cg_value emit_expr(struct method_ctx *ctx, struct node *node) {
 
         case And:
         case Or:
-            lhs_label = ctx->current_label;
             left = emit_expr(ctx, nth_child(node, 0));
+            lhs_label = ctx->current_label;
             rhs_label = new_label(ctx, node->category == And ? "and.rhs" : "or.rhs");
             end_label = new_label(ctx, node->category == And ? "and.end" : "or.end");
             if (node->category == And) {
@@ -606,14 +622,15 @@ static struct cg_value emit_expr(struct method_ctx *ctx, struct node *node) {
             ctx->terminated = 1;
             start_block(ctx, rhs_label);
             right = emit_expr(ctx, nth_child(node, 1));
+            rhs_pred_label = ctx->current_label;
             printf("  br label %%%s\n", end_label);
             ctx->terminated = 1;
             start_block(ctx, end_label);
             tmp = new_temp(ctx);
             if (node->category == And) {
-                printf("  %s = phi i1 [ 0, %%%s ], [ %s, %%%s ]\n", tmp, lhs_label, right.repr, rhs_label);
+                printf("  %s = phi i1 [ 0, %%%s ], [ %s, %%%s ]\n", tmp, lhs_label, right.repr, rhs_pred_label);
             } else {
-                printf("  %s = phi i1 [ 1, %%%s ], [ %s, %%%s ]\n", tmp, lhs_label, right.repr, rhs_label);
+                printf("  %s = phi i1 [ 1, %%%s ], [ %s, %%%s ]\n", tmp, lhs_label, right.repr, rhs_pred_label);
             }
             return (struct cg_value){ TYPE_BOOL, tmp };
 
@@ -678,6 +695,10 @@ static struct cg_value emit_expr(struct method_ctx *ctx, struct node *node) {
                 return (struct cg_value){ node->type, tmp };
             }
             if (node->category == Xor) {
+                if (node->type == TYPE_BOOL) {
+                    printf("  %s = xor i1 %s, %s\n", tmp, left.repr, right.repr);
+                    return (struct cg_value){ TYPE_BOOL, tmp };
+                }
                 printf("  %s = xor i32 %s, %s\n", tmp, left.repr, right.repr);
                 return (struct cg_value){ TYPE_INT, tmp };
             }
@@ -735,6 +756,14 @@ static void emit_stmt(struct method_ctx *ctx, struct node *node) {
                 cur = cur->next;
             }
             break;
+
+        case VarDecl: {
+            struct node *id_node = nth_child(node, 1);
+            if (id_node != NULL && id_node->token != NULL) {
+                activate_binding(ctx, id_node->token);
+            }
+            break;
+        }
 
         case If:
             cond = emit_expr(ctx, nth_child(node, 0));
@@ -833,7 +862,7 @@ static void emit_allocas_for_method(struct method_ctx *ctx, struct node *header,
             char *incoming = str_printf("%%p%d", param_index++);
             printf("  %s = alloca %s\n", ptr, llvm_type(type));
             printf("  store %s %s, %s* %s\n", llvm_type(type), incoming, llvm_type(type), ptr);
-            append_binding(&ctx->locals, id_node->token, ptr, type, 0);
+            append_binding(&ctx->locals, id_node->token, ptr, type, 0, 1);
             cur = cur->next;
         }
     }
@@ -848,7 +877,7 @@ static void emit_allocas_for_method(struct method_ctx *ctx, struct node *header,
             char *init = default_value(type);
             printf("  %s = alloca %s\n", ptr, llvm_type(type));
             printf("  store %s %s, %s* %s\n", llvm_type(type), init, llvm_type(type), ptr);
-            append_binding(&ctx->locals, id_node->token, ptr, type, 0);
+            append_binding(&ctx->locals, id_node->token, ptr, type, 0, 0);
         }
         cur = cur->next;
     }
@@ -894,7 +923,7 @@ static void emit_method(struct node *decl) {
 
     cur = body ? body->children : NULL;
     while (cur != NULL) {
-        if (cur->node != NULL && cur->node->category != VarDecl) {
+        if (cur->node != NULL) {
             ensure_live_block(&ctx);
             emit_stmt(&ctx, cur->node);
         }

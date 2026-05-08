@@ -478,25 +478,32 @@ sem_type check_expression(struct node *n) {
             break;
         }
 
-        // ── Operadores de bit: <<, >>, ^ ──────────────────────────────────────
-        // Apenas aceitam int
+        // ── Operadores de bit: <<, >> e xor ───────────────────────────────────
         case Xor:
         case Lshift:
         case Rshift: {
             sem_type lt = check_expression(nth_child(n, 0));
             sem_type rt = check_expression(nth_child(n, 1));
 
-            if (lt == TYPE_INT && rt == TYPE_INT) {
+            if (n->category == Xor) {
+                if (lt == TYPE_INT && rt == TYPE_INT) {
+                    result = TYPE_INT;
+                } else if (lt == TYPE_BOOL && rt == TYPE_BOOL) {
+                    result = TYPE_BOOL;
+                } else {
+                    printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                            n->line, n->column, op_name(n->category),
+                            type_name(lt), type_name(rt));
+                    result = (lt == TYPE_BOOL || rt == TYPE_BOOL) ? TYPE_BOOL : TYPE_INT;
+                    semantic_errors++;
+                }
+            } else if (lt == TYPE_INT && rt == TYPE_INT) {
                 result = TYPE_INT;
             } else {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                         n->line, n->column, op_name(n->category),
                         type_name(lt), type_name(rt));
-                
-                // Se houver UNDEF, propaga UNDEF. Caso contrário, assume-se INT por omissão
-                if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) {
-                    result = TYPE_INT;
-                }
+                result = TYPE_INT;
                 semantic_errors++;
             }
             n->type = result;

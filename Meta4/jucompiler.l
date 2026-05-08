@@ -504,15 +504,20 @@ int main(int argc, char *argv[]) {
             printall = 1;
             printerrors = 1;
         } else if (strcmp(argv[1], "-e1") == 0) {
+            lex_errors_only = 1;
             printerrors = 1;
         } else if (strcmp(argv[1], "-t") == 0) {
             print_ast = 1;
+            printerrors = 1;
         } else if (strcmp(argv[1], "-e2") == 0) {
             syntax_errors_only = 1;
+            printerrors = 1;
         } else if (strcmp(argv[1], "-s") == 0) {
             print_semantics = 1;
+            printerrors = 1;
         } else if (strcmp(argv[1], "-e3") == 0) {
             semantic_errors_only = 1;
+            printerrors = 1;
         }
     }
 

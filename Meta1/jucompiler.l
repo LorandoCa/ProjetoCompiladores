@@ -1,4 +1,5 @@
 %{
+    /* Lorando Ca e Augusto Hunguana */
     /* place here any C variables and definitions */
     int PrintMatch( char *word); 
     int incrementCol();
