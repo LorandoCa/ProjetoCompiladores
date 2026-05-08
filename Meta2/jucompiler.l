@@ -1,7 +1,7 @@
 %{
 
     /* Lorando Ca e Augusto Hunguana */
-    
+
     /* place here any C variables and definitions */
 
     #include "y.tab.h"
@@ -252,7 +252,6 @@ ELSE else
 "]"   { if (printall) PrintMatch("RSQ"); return RSQ; }
 
 if       { if (printall) PrintMatch("IF"); return IF; }
-then     { if (printall) PrintMatch("THEN"); return RESERVED; }
 else     { if (printall) PrintMatch("ELSE"); return ELSE; }
 while    { if (printall) PrintMatch("WHILE"); return WHILE; }
 return   { if (printall) PrintMatch("RETURN"); return RETURN; }
@@ -261,7 +260,6 @@ public   { if (printall) PrintMatch("PUBLIC"); return PUBLIC; }
 class    { if (printall) PrintMatch("CLASS"); return CLASS; }
 void     { if (printall) PrintMatch("VOID"); return VOID; }
 int      { if (printall) PrintMatch("INT"); return INT; }
-integer  { if (printall) PrintMatch("INTEGER"); return INTEGER; }
 double   { if (printall) PrintMatch("DOUBLE"); return DOUBLE; }
 boolean  { if (printall) PrintMatch("BOOL"); return BOOL; }
 String   { if (printall) PrintMatch("STRING"); return STRING; }
