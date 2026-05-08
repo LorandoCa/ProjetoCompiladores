@@ -692,6 +692,10 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "jucompiler.l"
 #line 2 "jucompiler.l"
+
+    /*Lorando Ca e Augusto Hunguana*/
+
+
     /* place here any C variables and definitions */
 
     #include "y.tab.h"
@@ -710,6 +714,8 @@ char *yytext;
 
     int yyparse(void);
     void yyerror(char *);
+
+    int semantic_analisis = 0;
 
     int colAtual = 1;
     int linha = 1;
@@ -803,9 +809,9 @@ static const char *category_names[] = {
 };
 
 
-#line 807 "lex.yy.c"
+#line 813 "lex.yy.c"
 
-#line 809 "lex.yy.c"
+#line 815 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1024,12 +1030,12 @@ YY_DECL
 		}
 
 	{
-#line 126 "jucompiler.l"
+#line 132 "jucompiler.l"
 
 
 
 
-#line 1033 "lex.yy.c"
+#line 1039 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1088,48 +1094,48 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 130 "jucompiler.l"
+#line 136 "jucompiler.l"
 {}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 131 "jucompiler.l"
+#line 137 "jucompiler.l"
 {}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 132 "jucompiler.l"
+#line 138 "jucompiler.l"
 { colAtual = 1; linha ++;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 133 "jucompiler.l"
+#line 139 "jucompiler.l"
 {}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 138 "jucompiler.l"
+#line 144 "jucompiler.l"
 {}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 140 "jucompiler.l"
+#line 146 "jucompiler.l"
 {BEGIN(COMMENT); lineBackup = syn_line; colBackup = syn_column;  }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 141 "jucompiler.l"
+#line 147 "jucompiler.l"
 {colAtual = 1; linha ++;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 142 "jucompiler.l"
+#line 148 "jucompiler.l"
 {colAtual += yyleng;}
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 143 "jucompiler.l"
+#line 149 "jucompiler.l"
 { if (printall || printerrors) printf("Line %d, col %d: unterminated comment\n", lineBackup, colBackup); 
                     syn_line = linha;     
                     syn_column = colAtual;
@@ -1138,7 +1144,7 @@ case YY_STATE_EOF(COMMENT):
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 148 "jucompiler.l"
+#line 154 "jucompiler.l"
 {
                 colAtual += yyleng; 
                 syn_line = linha;     
@@ -1147,12 +1153,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 160 "jucompiler.l"
+#line 166 "jucompiler.l"
 { BEGIN(STRINGSTATE); lineBackup = linha; colBackup = syn_column;  flag = 0; indice = 0; string[0]= '\0';}   /* inicia string */
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 163 "jucompiler.l"
+#line 169 "jucompiler.l"
 { char esc = yytext[yyleng - 1];
                                 string[indice++] = '\\';
                                 string[indice++] = esc;
@@ -1161,7 +1167,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 169 "jucompiler.l"
+#line 175 "jucompiler.l"
 { flag = 1; 
                             if(yytext[yyleng-1] == '\\') { 
                                 if (printall || printerrors) printf("Line %d, col %d: invalid escape sequence (\\)\n", linha, syn_column); 
@@ -1176,7 +1182,7 @@ YY_RULE_SETUP
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 180 "jucompiler.l"
+#line 186 "jucompiler.l"
 { BEGIN INITIAL; if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); 
                                 colAtual = 1; linha ++; string[0] = '\0';
                                 syn_column = colBackup;
@@ -1184,7 +1190,7 @@ YY_RULE_SETUP
                             }/*newlines*/
 	YY_BREAK
 case YY_STATE_EOF(STRINGSTATE):
-#line 186 "jucompiler.l"
+#line 192 "jucompiler.l"
 {BEGIN INITIAL;  if (printall || printerrors) printf("Line %d, col %d: unterminated string literal\n", lineBackup, colBackup); 
                                 syn_column = colBackup;
                                 syn_line = lineBackup;
@@ -1192,7 +1198,7 @@ case YY_STATE_EOF(STRINGSTATE):
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 191 "jucompiler.l"
+#line 197 "jucompiler.l"
 { 
     colAtual++;
     BEGIN INITIAL; 
@@ -1215,462 +1221,462 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 211 "jucompiler.l"
+#line 217 "jucompiler.l"
 { copiarString(yytext[0]);  colAtual++;}/*texto normal*/
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 218 "jucompiler.l"
+#line 224 "jucompiler.l"
 { if (printall) PrintMatch("PRINT"); return PRINT; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 219 "jucompiler.l"
+#line 225 "jucompiler.l"
 { if (printall) PrintMatch("PARSEINT"); return PARSEINT;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 220 "jucompiler.l"
+#line 226 "jucompiler.l"
 { if (printall) PrintMatch("DOTLENGTH"); return DOTLENGTH;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 222 "jucompiler.l"
+#line 228 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(++)"); return RESERVED; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 223 "jucompiler.l"
+#line 229 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(--)"); return RESERVED; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 224 "jucompiler.l"
+#line 230 "jucompiler.l"
 { if (printall) PrintMatch("EQ"); PASS_TOKEN(); return EQ; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 225 "jucompiler.l"
+#line 231 "jucompiler.l"
 { if (printall) PrintMatch("NE"); PASS_TOKEN(); return NE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 226 "jucompiler.l"
+#line 232 "jucompiler.l"
 { if (printall) PrintMatch("GE"); return GE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 227 "jucompiler.l"
+#line 233 "jucompiler.l"
 { if (printall) PrintMatch("LE"); return LE; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 228 "jucompiler.l"
+#line 234 "jucompiler.l"
 { if (printall) PrintMatch("RSHIFT"); return RSHIFT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 229 "jucompiler.l"
+#line 235 "jucompiler.l"
 { if (printall) PrintMatch("LSHIFT"); return LSHIFT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 230 "jucompiler.l"
+#line 236 "jucompiler.l"
 { if (printall) PrintMatch("AND"); return AND; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 231 "jucompiler.l"
+#line 237 "jucompiler.l"
 { if (printall) PrintMatch("OR"); return OR; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 232 "jucompiler.l"
+#line 238 "jucompiler.l"
 { if (printall) PrintMatch("ARROW"); return RESERVED; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 234 "jucompiler.l"
+#line 240 "jucompiler.l"
 { if (printall) PrintMatch("ASSIGN"); PASS_TOKEN(); return ASSIGN; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 235 "jucompiler.l"
+#line 241 "jucompiler.l"
 { if (printall) PrintMatch("GT"); return GT; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 236 "jucompiler.l"
+#line 242 "jucompiler.l"
 { if (printall) PrintMatch("LT"); return LT; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 237 "jucompiler.l"
+#line 243 "jucompiler.l"
 { if (printall) PrintMatch("PLUS"); PASS_TOKEN(); return PLUS; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 238 "jucompiler.l"
+#line 244 "jucompiler.l"
 { if (printall) PrintMatch("MINUS"); PASS_TOKEN(); return MINUS; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 239 "jucompiler.l"
+#line 245 "jucompiler.l"
 { if (printall) PrintMatch("STAR"); PASS_TOKEN(); return STAR; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 240 "jucompiler.l"
+#line 246 "jucompiler.l"
 { if (printall) PrintMatch("DIV"); PASS_TOKEN(); return DIV; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 241 "jucompiler.l"
+#line 247 "jucompiler.l"
 { if (printall) PrintMatch("MOD"); return MOD; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 242 "jucompiler.l"
+#line 248 "jucompiler.l"
 { if (printall) PrintMatch("NOT"); return NOT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 243 "jucompiler.l"
+#line 249 "jucompiler.l"
 { if (printall) PrintMatch("XOR"); PASS_TOKEN(); return XOR; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 244 "jucompiler.l"
+#line 250 "jucompiler.l"
 { if (printall) PrintMatch("COMMA"); return COMMA; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 245 "jucompiler.l"
+#line 251 "jucompiler.l"
 { if (printall) PrintMatch("SEMICOLON"); return SEMICOLON; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 246 "jucompiler.l"
+#line 252 "jucompiler.l"
 { if (printall) PrintMatch("LBRACE"); return LBRACE; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 247 "jucompiler.l"
+#line 253 "jucompiler.l"
 { if (printall) PrintMatch("RBRACE"); return RBRACE; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 248 "jucompiler.l"
+#line 254 "jucompiler.l"
 { if (printall) PrintMatch("LPAR"); return LPAR; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 249 "jucompiler.l"
+#line 255 "jucompiler.l"
 { if (printall) PrintMatch("RPAR"); return RPAR; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 250 "jucompiler.l"
+#line 256 "jucompiler.l"
 { if (printall) PrintMatch("LSQ"); return LSQ; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 251 "jucompiler.l"
+#line 257 "jucompiler.l"
 { if (printall) PrintMatch("RSQ"); return RSQ; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 253 "jucompiler.l"
+#line 259 "jucompiler.l"
 { if (printall) PrintMatch("IF"); return IF; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 254 "jucompiler.l"
+#line 260 "jucompiler.l"
 { if (printall) PrintMatch("THEN"); return RESERVED; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 255 "jucompiler.l"
+#line 261 "jucompiler.l"
 { if (printall) PrintMatch("ELSE"); return ELSE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 256 "jucompiler.l"
+#line 262 "jucompiler.l"
 { if (printall) PrintMatch("WHILE"); return WHILE; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 257 "jucompiler.l"
+#line 263 "jucompiler.l"
 { if (printall) PrintMatch("RETURN"); return RETURN; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 258 "jucompiler.l"
+#line 264 "jucompiler.l"
 { if (printall) PrintMatch("STATIC"); return STATIC; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 259 "jucompiler.l"
+#line 265 "jucompiler.l"
 { if (printall) PrintMatch("PUBLIC"); return PUBLIC; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 260 "jucompiler.l"
+#line 266 "jucompiler.l"
 { if (printall) PrintMatch("CLASS"); return CLASS; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 261 "jucompiler.l"
+#line 267 "jucompiler.l"
 { if (printall) PrintMatch("VOID"); return VOID; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 262 "jucompiler.l"
+#line 268 "jucompiler.l"
 { if (printall) PrintMatch("INT"); return INT; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 263 "jucompiler.l"
+#line 269 "jucompiler.l"
 { if (printall) PrintMatch("INTEGER"); return INTEGER; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 264 "jucompiler.l"
+#line 270 "jucompiler.l"
 { if (printall) PrintMatch("DOUBLE"); return DOUBLE; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 265 "jucompiler.l"
+#line 271 "jucompiler.l"
 { if (printall) PrintMatch("BOOL"); return BOOL; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 266 "jucompiler.l"
+#line 272 "jucompiler.l"
 { if (printall) PrintMatch("STRING"); return STRING; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 268 "jucompiler.l"
+#line 274 "jucompiler.l"
 { if (printall) PrintMatch("BOOLLIT(true)"); PASS_TOKEN(); return BOOLLIT; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 269 "jucompiler.l"
+#line 275 "jucompiler.l"
 { if (printall) PrintMatch("BOOLLIT(false)"); PASS_TOKEN(); return BOOLLIT; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 270 "jucompiler.l"
+#line 276 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(null)"); return RESERVED; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 272 "jucompiler.l"
+#line 278 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(Integer)"); return RESERVED; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 273 "jucompiler.l"
+#line 279 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(System)"); return RESERVED; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 275 "jucompiler.l"
+#line 281 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(break)"); return RESERVED; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 276 "jucompiler.l"
+#line 282 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(byte)"); return RESERVED; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 277 "jucompiler.l"
+#line 283 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(case)"); return RESERVED; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 278 "jucompiler.l"
+#line 284 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(catch)"); return RESERVED; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 279 "jucompiler.l"
+#line 285 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(char)"); return RESERVED; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 280 "jucompiler.l"
+#line 286 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(const)"); return RESERVED; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 281 "jucompiler.l"
+#line 287 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(enum)"); return RESERVED; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 282 "jucompiler.l"
+#line 288 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(extends)"); return RESERVED; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 283 "jucompiler.l"
+#line 289 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(final)"); return RESERVED; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 284 "jucompiler.l"
+#line 290 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(finally)"); return RESERVED; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 285 "jucompiler.l"
+#line 291 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(float)"); return RESERVED; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 286 "jucompiler.l"
+#line 292 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(for)"); return RESERVED; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 287 "jucompiler.l"
+#line 293 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(implements)"); return RESERVED; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 288 "jucompiler.l"
+#line 294 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(import)"); return RESERVED; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 289 "jucompiler.l"
+#line 295 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(instanceof)"); return RESERVED; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 290 "jucompiler.l"
+#line 296 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(interface)"); return RESERVED; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 291 "jucompiler.l"
+#line 297 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(long)"); return RESERVED; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 292 "jucompiler.l"
+#line 298 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(native)"); return RESERVED; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 293 "jucompiler.l"
+#line 299 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(new)"); return RESERVED; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 294 "jucompiler.l"
+#line 300 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(protected)"); return RESERVED; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 295 "jucompiler.l"
+#line 301 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(short)"); return RESERVED; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 296 "jucompiler.l"
+#line 302 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(strictfp)"); return RESERVED; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 297 "jucompiler.l"
+#line 303 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(super)"); return RESERVED; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 298 "jucompiler.l"
+#line 304 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(this)"); return RESERVED; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 299 "jucompiler.l"
+#line 305 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(throw)"); return RESERVED; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 300 "jucompiler.l"
+#line 306 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(throws)"); return RESERVED; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 301 "jucompiler.l"
+#line 307 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(transient)"); return RESERVED; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 302 "jucompiler.l"
+#line 308 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(try)"); return RESERVED; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 303 "jucompiler.l"
+#line 309 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(volatile)"); return RESERVED; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 304 "jucompiler.l"
+#line 310 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(abstract)"); return RESERVED; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 305 "jucompiler.l"
+#line 311 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(continue)"); return RESERVED; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 306 "jucompiler.l"
+#line 312 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(switch)"); return RESERVED; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 307 "jucompiler.l"
+#line 313 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(assert)"); return RESERVED; }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 308 "jucompiler.l"
+#line 314 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(default)"); return RESERVED; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 309 "jucompiler.l"
+#line 315 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(package)"); return RESERVED; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 310 "jucompiler.l"
+#line 316 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(synchronized)"); return RESERVED; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 311 "jucompiler.l"
+#line 317 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(do)"); return RESERVED; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 312 "jucompiler.l"
+#line 318 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(goto)"); return RESERVED; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 313 "jucompiler.l"
+#line 319 "jucompiler.l"
 { if (printall) PrintMatch("RESERVED(private)"); return RESERVED; }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 316 "jucompiler.l"
+#line 322 "jucompiler.l"
 { 
     /*texto reconhecido para yylval.lexeme*/
 PASS_TOKEN();
@@ -1680,7 +1686,7 @@ return IDENTIFIER;
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 325 "jucompiler.l"
+#line 331 "jucompiler.l"
 {
     /*DECIMAIS*/
     PASS_TOKEN();
@@ -1690,7 +1696,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 332 "jucompiler.l"
+#line 338 "jucompiler.l"
 {
     PASS_TOKEN();
     if( printall) printf ("DECIMAL(%s)\n", yytext);
@@ -1699,7 +1705,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 338 "jucompiler.l"
+#line 344 "jucompiler.l"
 {
     PASS_TOKEN();
     if( printall) printf ("DECIMAL(%s)\n", yytext);
@@ -1708,7 +1714,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 344 "jucompiler.l"
+#line 350 "jucompiler.l"
 {
     PASS_TOKEN();
     if( printall) printf ("DECIMAL(%s)\n", yytext);
@@ -1717,7 +1723,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 350 "jucompiler.l"
+#line 356 "jucompiler.l"
 {
     PASS_TOKEN();
     if( printall) printf ("DECIMAL(%s)\n", yytext);
@@ -1726,7 +1732,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 357 "jucompiler.l"
+#line 363 "jucompiler.l"
 {
     PASS_TOKEN();
     if( printall) printf ("NATURAL(%s)\n", yytext);
@@ -1735,19 +1741,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 364 "jucompiler.l"
+#line 370 "jucompiler.l"
 { if (printall || printerrors) printf("Line %d, col %d: illegal character (%s)\n",  linha, syn_column, yytext); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 366 "jucompiler.l"
+#line 372 "jucompiler.l"
 { YY_USER_ACTION; return 0; }
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 370 "jucompiler.l"
+#line 376 "jucompiler.l"
 ECHO;
 	YY_BREAK
-#line 1751 "lex.yy.c"
+#line 1757 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2750,7 +2756,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 370 "jucompiler.l"
+#line 376 "jucompiler.l"
 
 
 #include <stdio.h>
@@ -2776,7 +2782,39 @@ void yyerror (char *s) {
     errors++;
 }
 
+
+
+void show_no_types(struct node *no, int depth) {
+    if (no == NULL) return;
+
+    const char *name = category_names[no->category];
+    if (name == NULL) name = "UNKNOWN";
+
+    int next_depth = depth;
+
+    if(strcmp(name, "Args") != 0 && strcmp(name, "Dummy") != 0) {
+        
+        for (int i = 0; i < 2 * depth; i++) printf(".");
+
+        if (no->token != NULL)
+            printf("%s(%s)\n", name, no->token);
+        else
+            printf("%s\n", name);
+        
+        next_depth = depth + 1;
+    }
+
+    struct node_list *atual = no->children;
+    while (atual != NULL) {
+        if (atual->node != NULL)
+            show_no_types(atual->node, next_depth);
+        atual = atual->next;
+    }
+}
+
 void show(struct node *no, int depth) {
+
+    if(semantic_analisis && errors > 0){ show_no_types(no, depth); return; }
     if (no == NULL) return;
 
     const char *name = category_names[no->category];
@@ -2791,12 +2829,12 @@ void show(struct node *no, int depth) {
         if (no->token != NULL && !ignoreOp(no->category)) {
             if (no->args != NULL)
                 printf("%s(%s) - %s\n", name, no->token, no->args);
-            else if (no->visit == 1 && is_operation(no->category) && !ignore(no->type))
+            else if (no->visit == 1 && no->varDecl != 1 && is_operation(no->category) && !ignore(no->type))
                 printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
             else
                 printf("%s(%s)\n", name, no->token);
         } else {
-            if (no->visit == 1 && is_operation(no->category) && !ignore(no->type))
+            if (no->visit == 1 && no->varDecl != 1 && is_operation(no->category) && !ignore(no->type))
                 printf("%s - %s\n", name, type_name(no->type));
             else
                 printf("%s\n", name);
@@ -2814,58 +2852,15 @@ void show(struct node *no, int depth) {
         atual = atual->next;
     }
 }
-/*
-void show(struct node *no, int depth) {
-    if (no == NULL){
-        return;
-    }
 
-    const char *name = category_names[no->category];
-
-    // 2. Proteção contra string nula
-    if (name == NULL) name = "UNKNOWN";
-
-    int next_depth = depth;
-
-    // Só imprime e aumenta a profundidade se não for Args nem Dummy
-    if(strcmp(name, "Args") != 0 && strcmp(name, "Dummy") != 0) {
-
-        for (int i = 0; i < 2 * depth; i++) printf(".");
-
-        if (no->token != NULL) {
-            if (no->args != NULL)
-                printf("%s(%s) - %s\n", name, no->token, no->args);
-            else if (is_operation(no->category) && !ignore(no->type))
-                printf("%s(%s) - %s\n", name, no->token, type_name(no->type));
-            else
-                printf("%s(%s)\n", name, no->token);
-        } else {
-            if (is_operation(no->category) && !ignore(no->type) )
-                printf("%s - %s\n", name, type_name(no->type));
-            else
-                printf("%s\n", name);
-        }
-
-        next_depth = depth + 1;
-    }
-    // Chamada recursiva sempre usa o próximo nível de profundidade calculado
-    //if(no->visit == 1){
-        struct node_list *atual = no->children;
-        while (atual != NULL) {
-            show(atual->node, next_depth);
-            atual = atual->next;
-        }
-   // }
-}*/
 
 
 int main(int argc, char *argv[]) {
 
     int printTree = 0;
     int syntatic_analisis = 0;
-    int semantic_analisis = 0;
 
-    if ((argc > 1 && argv[1][0] == '-' && argv[1][1] == 'S' && argv[1][2] == '\0') || argc == 1) {
+    if ((argc > 1 && argv[1][0] == '-' && argv[1][1] == 's' && argv[1][2] == '\0') || argc == 1) {
         printerrors = 1;
         syntatic_analisis = 1;
         semantic_analisis = 1;

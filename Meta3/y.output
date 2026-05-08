@@ -73,120 +73,121 @@ Grammar
    45         | IDENTIFIER LPAR error RPAR
    46         | IDENTIFIER ASSIGN Expr
    47         | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | PARSEINT LPAR error RPAR
 
-   48 Expr: AssignExpr
-   49     | LPAR error RPAR
+   49 Expr: AssignExpr
+   50     | LPAR error RPAR
 
-   50 AssignExpr: IDENTIFIER ASSIGN AssignExpr
-   51           | OrExpr
+   51 AssignExpr: IDENTIFIER ASSIGN AssignExpr
+   52           | OrExpr
 
-   52 OrExpr: OrExpr OR AndExpr
-   53       | AndExpr
+   53 OrExpr: OrExpr OR AndExpr
+   54       | AndExpr
 
-   54 AndExpr: AndExpr AND XorExpr
-   55        | XorExpr
+   55 AndExpr: AndExpr AND XorExpr
+   56        | XorExpr
 
-   56 XorExpr: XorExpr XOR EqExpr
-   57        | EqExpr
+   57 XorExpr: XorExpr XOR EqExpr
+   58        | EqExpr
 
-   58 EqExpr: EqExpr EQ RelExpr
-   59       | EqExpr NE RelExpr
-   60       | RelExpr
+   59 EqExpr: EqExpr EQ RelExpr
+   60       | EqExpr NE RelExpr
+   61       | RelExpr
 
-   61 RelExpr: RelExpr LT ShiftExpr
-   62        | RelExpr LE ShiftExpr
-   63        | RelExpr GT ShiftExpr
-   64        | RelExpr GE ShiftExpr
-   65        | ShiftExpr
+   62 RelExpr: RelExpr LT ShiftExpr
+   63        | RelExpr LE ShiftExpr
+   64        | RelExpr GT ShiftExpr
+   65        | RelExpr GE ShiftExpr
+   66        | ShiftExpr
 
-   66 ShiftExpr: ShiftExpr LSHIFT AddExpr
-   67          | ShiftExpr RSHIFT AddExpr
-   68          | AddExpr
+   67 ShiftExpr: ShiftExpr LSHIFT AddExpr
+   68          | ShiftExpr RSHIFT AddExpr
+   69          | AddExpr
 
-   69 AddExpr: AddExpr PLUS MulExpr
-   70        | AddExpr MINUS MulExpr
-   71        | MulExpr
+   70 AddExpr: AddExpr PLUS MulExpr
+   71        | AddExpr MINUS MulExpr
+   72        | MulExpr
 
-   72 MulExpr: MulExpr STAR UnaryExpr
-   73        | MulExpr DIV UnaryExpr
-   74        | MulExpr MOD UnaryExpr
-   75        | UnaryExpr
+   73 MulExpr: MulExpr STAR UnaryExpr
+   74        | MulExpr DIV UnaryExpr
+   75        | MulExpr MOD UnaryExpr
+   76        | UnaryExpr
 
-   76 UnaryExpr: MINUS UnaryExpr
-   77          | NOT UnaryExpr
-   78          | PLUS UnaryExpr
-   79          | PostfixExpr
+   77 UnaryExpr: MINUS UnaryExpr
+   78          | NOT UnaryExpr
+   79          | PLUS UnaryExpr
+   80          | PostfixExpr
 
-   80 PostfixExpr: IDENTIFIER DOTLENGTH
-   81            | IDENTIFIER LPAR ArgListOpt RPAR
-   82            | IDENTIFIER LPAR error RPAR
-   83            | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | PARSEINT LPAR error RPAR
-   85            | LPAR Expr RPAR
-   86            | IDENTIFIER
-   87            | NATURAL
-   88            | DECIMAL
-   89            | BOOLLIT
+   81 PostfixExpr: IDENTIFIER DOTLENGTH
+   82            | IDENTIFIER LPAR ArgListOpt RPAR
+   83            | IDENTIFIER LPAR error RPAR
+   84            | PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | PARSEINT LPAR error RPAR
+   86            | LPAR Expr RPAR
+   87            | IDENTIFIER
+   88            | NATURAL
+   89            | DECIMAL
+   90            | BOOLLIT
 
-   90 ArgListOpt: ArgList
-   91           | ε
+   91 ArgListOpt: ArgList
+   92           | ε
 
-   92 ArgList: Expr
-   93        | ArgList COMMA Expr
+   93 ArgList: Expr
+   94        | ArgList COMMA Expr
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    error (256) 8 37 45 49 82 84
+    error (256) 8 37 45 48 50 83 85
     CLASS (258) 1
     LBRACE (259) 1 24 29
     RBRACE (260) 1 24 29
     PUBLIC (261) 6 7
     STATIC (262) 6 7
     SEMICOLON (263) 4 7 8 28 31 33 34 35 36 37
-    COMMA (264) 9 11 23 93
+    COMMA (264) 9 11 23 94
     BOOL (265) 13
     INT (266) 14
     VOID (267) 17
     STRING (268) 21
-    LPAR (269) 16 17 32 35 36 40 41 44 45 47 49 81 82 83 84 85
-    RPAR (270) 16 17 32 35 36 40 41 44 45 47 49 81 82 83 84 85
-    LSQ (271) 21 47 83
-    RSQ (272) 21 47 83
+    LPAR (269) 16 17 32 35 36 40 41 44 45 47 48 50 82 83 84 85 86
+    RPAR (270) 16 17 32 35 36 40 41 44 45 47 48 50 82 83 84 85 86
+    LSQ (271) 21 47 84
+    RSQ (272) 21 47 84
     IF (273) 40 41
     ELSE (274) 40
     WHILE (275) 32
     RETURN (276) 33
     PRINT (277) 35 36
-    PARSEINT (278) 47 83 84
-    DOTLENGTH (279) 80
-    ASSIGN (280) 46 50
-    OR (281) 52
-    AND (282) 54
-    LT (283) 61
-    LE (284) 62
-    GT (285) 63
-    GE (286) 64
-    LSHIFT (287) 66
-    RSHIFT (288) 67
-    PLUS (289) 69 78
-    MINUS (290) 70 76
-    STAR (291) 72
-    DIV (292) 73
-    MOD (293) 74
-    NOT (294) 77
-    RESERVED (295)
-    IDENTIFIER <lexeme> (296) 1 9 10 11 12 16 17 21 22 23 44 45 46 47 50 80 81 82 83 86
-    NATURAL <lexeme> (297) 87
-    DECIMAL <lexeme> (298) 88
-    INTEGER <lexeme> (299)
-    DOUBLE <lexeme> (300) 15
-    STRLIT <lexeme> (301) 36
-    BOOLLIT <lexeme> (302) 89
-    XOR <lexeme> (303) 56
-    EQ <lexeme> (304) 58
-    NE <lexeme> (305) 59
+    PARSEINT (278) 47 48 84 85
+    DOTLENGTH (279) 81
+    ASSIGN (280) 46 51
+    OR (281) 53
+    AND (282) 55
+    LT (283) 62
+    LE (284) 63
+    GT (285) 64
+    GE (286) 65
+    LSHIFT (287) 67
+    RSHIFT (288) 68
+    STAR (289) 73
+    DIV (290) 74
+    MOD (291) 75
+    NOT (292) 78
+    RESERVED (293)
+    IDENTIFIER <lexeme> (294) 1 9 10 11 12 16 17 21 22 23 44 45 46 47 51 81 82 83 84 87
+    NATURAL <lexeme> (295) 88
+    DECIMAL <lexeme> (296) 89
+    INTEGER <lexeme> (297)
+    DOUBLE <lexeme> (298) 15
+    STRLIT <lexeme> (299) 36
+    BOOLLIT <lexeme> (300) 90
+    XOR <lexeme> (301) 57
+    EQ <lexeme> (302) 59
+    NE <lexeme> (303) 60
+    PLUS <lexeme> (304) 70 79
+    MINUS <lexeme> (305) 71 77
     WITHOUT_ELSE (306)
 
 
@@ -249,50 +250,50 @@ Nonterminals, with rules where they appear
         on left: 42 43
         on right: 33
     ExprStmt <node> (71)
-        on left: 44 45 46 47
+        on left: 44 45 46 47 48
         on right: 34
     Expr <node> (72)
-        on left: 48 49
-        on right: 32 35 40 41 42 46 47 83 85 92 93
+        on left: 49 50
+        on right: 32 35 40 41 42 46 47 84 86 93 94
     AssignExpr <node> (73)
-        on left: 50 51
-        on right: 48 50
+        on left: 51 52
+        on right: 49 51
     OrExpr <node> (74)
-        on left: 52 53
-        on right: 51 52
+        on left: 53 54
+        on right: 52 53
     AndExpr <node> (75)
-        on left: 54 55
-        on right: 52 53 54
+        on left: 55 56
+        on right: 53 54 55
     XorExpr <node> (76)
-        on left: 56 57
-        on right: 54 55 56
+        on left: 57 58
+        on right: 55 56 57
     EqExpr <node> (77)
-        on left: 58 59 60
-        on right: 56 57 58 59
+        on left: 59 60 61
+        on right: 57 58 59 60
     RelExpr <node> (78)
-        on left: 61 62 63 64 65
-        on right: 58 59 60 61 62 63 64
+        on left: 62 63 64 65 66
+        on right: 59 60 61 62 63 64 65
     ShiftExpr <node> (79)
-        on left: 66 67 68
-        on right: 61 62 63 64 65 66 67
+        on left: 67 68 69
+        on right: 62 63 64 65 66 67 68
     AddExpr <node> (80)
-        on left: 69 70 71
-        on right: 66 67 68 69 70
+        on left: 70 71 72
+        on right: 67 68 69 70 71
     MulExpr <node> (81)
-        on left: 72 73 74 75
-        on right: 69 70 71 72 73 74
+        on left: 73 74 75 76
+        on right: 70 71 72 73 74 75
     UnaryExpr <node> (82)
-        on left: 76 77 78 79
-        on right: 72 73 74 75 76 77 78
+        on left: 77 78 79 80
+        on right: 73 74 75 76 77 78 79
     PostfixExpr <node> (83)
-        on left: 80 81 82 83 84 85 86 87 88 89
-        on right: 79
+        on left: 81 82 83 84 85 86 87 88 89 90
+        on right: 80
     ArgListOpt <node> (84)
-        on left: 90 91
-        on right: 44 81
+        on left: 91 92
+        on right: 44 82
     ArgList <node> (85)
-        on left: 92 93
-        on right: 90 93
+        on left: 93 94
+        on right: 91 94
 
 
 State 0
@@ -619,6 +620,7 @@ State 30
    45         | • IDENTIFIER LPAR error RPAR
    46         | • IDENTIFIER ASSIGN Expr
    47         | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | • PARSEINT LPAR error RPAR
 
     error       shift, and go to state 38
     LBRACE      shift, and go to state 39
@@ -745,58 +747,58 @@ State 44
    33 Statement: RETURN • ExprOpt SEMICOLON
    42 ExprOpt: • Expr
    43        | ε •  [SEMICOLON]
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     $default  reduce using rule 43 (ExprOpt)
 
@@ -826,6 +828,7 @@ State 45
 State 46
 
    47 ExprStmt: PARSEINT • LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | PARSEINT • LPAR error RPAR
 
     LPAR  shift, and go to state 85
 
@@ -947,6 +950,7 @@ State 59
    45         | • IDENTIFIER LPAR error RPAR
    46         | • IDENTIFIER ASSIGN Expr
    47         | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | • PARSEINT LPAR error RPAR
 
     error       shift, and go to state 38
     LBRACE      shift, and go to state 39
@@ -968,58 +972,58 @@ State 60
 
    40 IfStmt: IF LPAR • Expr RPAR Statement ELSE Statement
    41       | IF LPAR • Expr RPAR Statement
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 95
     AssignExpr   go to state 73
@@ -1038,58 +1042,58 @@ State 60
 State 61
 
    32 Statement: WHILE LPAR • Expr RPAR Statement
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 96
     AssignExpr   go to state 73
@@ -1107,61 +1111,61 @@ State 61
 
 State 62
 
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   49     | LPAR • error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   85            | LPAR • Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   50     | LPAR • error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   86            | LPAR • Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     error       shift, and go to state 97
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 98
     AssignExpr   go to state 73
@@ -1179,39 +1183,39 @@ State 62
 
 State 63
 
-   83 PostfixExpr: PARSEINT • LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | PARSEINT • LPAR error RPAR
+   84 PostfixExpr: PARSEINT • LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | PARSEINT • LPAR error RPAR
 
     LPAR  shift, and go to state 99
 
 
 State 64
 
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   78          | PLUS • UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   78          | NOT • UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     UnaryExpr    go to state 102
     PostfixExpr  go to state 83
@@ -1219,102 +1223,102 @@ State 64
 
 State 65
 
-   76 UnaryExpr: • MINUS UnaryExpr
-   76          | MINUS • UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   51 AssignExpr: IDENTIFIER • ASSIGN AssignExpr
+   81 PostfixExpr: IDENTIFIER • DOTLENGTH
+   82            | IDENTIFIER • LPAR ArgListOpt RPAR
+   83            | IDENTIFIER • LPAR error RPAR
+   87            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, STAR, DIV, MOD, XOR, EQ, NE, PLUS, MINUS]
 
-    LPAR        shift, and go to state 100
-    PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
-
-    UnaryExpr    go to state 103
-    PostfixExpr  go to state 83
-
-
-State 66
-
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   77          | NOT • UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
-
-    LPAR        shift, and go to state 100
-    PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
-
-    UnaryExpr    go to state 104
-    PostfixExpr  go to state 83
-
-
-State 67
-
-   50 AssignExpr: IDENTIFIER • ASSIGN AssignExpr
-   80 PostfixExpr: IDENTIFIER • DOTLENGTH
-   81            | IDENTIFIER • LPAR ArgListOpt RPAR
-   82            | IDENTIFIER • LPAR error RPAR
-   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD, XOR, EQ, NE]
-
-    LPAR       shift, and go to state 105
-    DOTLENGTH  shift, and go to state 106
-    ASSIGN     shift, and go to state 107
-
-    $default  reduce using rule 86 (PostfixExpr)
-
-
-State 68
-
-   87 PostfixExpr: NATURAL •
+    LPAR       shift, and go to state 103
+    DOTLENGTH  shift, and go to state 104
+    ASSIGN     shift, and go to state 105
 
     $default  reduce using rule 87 (PostfixExpr)
 
 
-State 69
+State 66
 
-   88 PostfixExpr: DECIMAL •
+   88 PostfixExpr: NATURAL •
 
     $default  reduce using rule 88 (PostfixExpr)
 
 
-State 70
+State 67
 
-   89 PostfixExpr: BOOLLIT •
+   89 PostfixExpr: DECIMAL •
 
     $default  reduce using rule 89 (PostfixExpr)
+
+
+State 68
+
+   90 PostfixExpr: BOOLLIT •
+
+    $default  reduce using rule 90 (PostfixExpr)
+
+
+State 69
+
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   79          | PLUS • UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+
+    LPAR        shift, and go to state 100
+    PARSEINT    shift, and go to state 63
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 101
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
+
+    UnaryExpr    go to state 106
+    PostfixExpr  go to state 83
+
+
+State 70
+
+   77 UnaryExpr: • MINUS UnaryExpr
+   77          | MINUS • UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+
+    LPAR        shift, and go to state 100
+    PARSEINT    shift, and go to state 63
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 101
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
+
+    UnaryExpr    go to state 107
+    PostfixExpr  go to state 83
 
 
 State 71
@@ -1333,178 +1337,178 @@ State 72
 
 State 73
 
-   48 Expr: AssignExpr •
+   49 Expr: AssignExpr •
 
-    $default  reduce using rule 48 (Expr)
+    $default  reduce using rule 49 (Expr)
 
 
 State 74
 
-   51 AssignExpr: OrExpr •  [SEMICOLON, COMMA, RPAR, RSQ]
-   52 OrExpr: OrExpr • OR AndExpr
+   52 AssignExpr: OrExpr •  [SEMICOLON, COMMA, RPAR, RSQ]
+   53 OrExpr: OrExpr • OR AndExpr
 
     OR  shift, and go to state 109
 
-    $default  reduce using rule 51 (AssignExpr)
+    $default  reduce using rule 52 (AssignExpr)
 
 
 State 75
 
-   53 OrExpr: AndExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR]
-   54 AndExpr: AndExpr • AND XorExpr
+   54 OrExpr: AndExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR]
+   55 AndExpr: AndExpr • AND XorExpr
 
     AND  shift, and go to state 110
 
-    $default  reduce using rule 53 (OrExpr)
+    $default  reduce using rule 54 (OrExpr)
 
 
 State 76
 
-   55 AndExpr: XorExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND]
-   56 XorExpr: XorExpr • XOR EqExpr
+   56 AndExpr: XorExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND]
+   57 XorExpr: XorExpr • XOR EqExpr
 
     XOR  shift, and go to state 111
 
-    $default  reduce using rule 55 (AndExpr)
+    $default  reduce using rule 56 (AndExpr)
 
 
 State 77
 
-   57 XorExpr: EqExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR]
-   58 EqExpr: EqExpr • EQ RelExpr
-   59       | EqExpr • NE RelExpr
+   58 XorExpr: EqExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR]
+   59 EqExpr: EqExpr • EQ RelExpr
+   60       | EqExpr • NE RelExpr
 
     EQ  shift, and go to state 112
     NE  shift, and go to state 113
 
-    $default  reduce using rule 57 (XorExpr)
+    $default  reduce using rule 58 (XorExpr)
 
 
 State 78
 
-   60 EqExpr: RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
-   61 RelExpr: RelExpr • LT ShiftExpr
-   62        | RelExpr • LE ShiftExpr
-   63        | RelExpr • GT ShiftExpr
-   64        | RelExpr • GE ShiftExpr
+   61 EqExpr: RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   62 RelExpr: RelExpr • LT ShiftExpr
+   63        | RelExpr • LE ShiftExpr
+   64        | RelExpr • GT ShiftExpr
+   65        | RelExpr • GE ShiftExpr
 
     LT  shift, and go to state 114
     LE  shift, and go to state 115
     GT  shift, and go to state 116
     GE  shift, and go to state 117
 
-    $default  reduce using rule 60 (EqExpr)
+    $default  reduce using rule 61 (EqExpr)
 
 
 State 79
 
-   65 RelExpr: ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
-   66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
-   67          | ShiftExpr • RSHIFT AddExpr
+   66 RelExpr: ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
+   67 ShiftExpr: ShiftExpr • LSHIFT AddExpr
+   68          | ShiftExpr • RSHIFT AddExpr
 
     LSHIFT  shift, and go to state 118
     RSHIFT  shift, and go to state 119
 
-    $default  reduce using rule 65 (RelExpr)
+    $default  reduce using rule 66 (RelExpr)
 
 
 State 80
 
-   68 ShiftExpr: AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
-   69 AddExpr: AddExpr • PLUS MulExpr
-   70        | AddExpr • MINUS MulExpr
+   69 ShiftExpr: AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
+   70 AddExpr: AddExpr • PLUS MulExpr
+   71        | AddExpr • MINUS MulExpr
 
     PLUS   shift, and go to state 120
     MINUS  shift, and go to state 121
 
-    $default  reduce using rule 68 (ShiftExpr)
+    $default  reduce using rule 69 (ShiftExpr)
 
 
 State 81
 
-   71 AddExpr: MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR, EQ, NE]
-   72 MulExpr: MulExpr • STAR UnaryExpr
-   73        | MulExpr • DIV UnaryExpr
-   74        | MulExpr • MOD UnaryExpr
+   72 AddExpr: MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE, PLUS, MINUS]
+   73 MulExpr: MulExpr • STAR UnaryExpr
+   74        | MulExpr • DIV UnaryExpr
+   75        | MulExpr • MOD UnaryExpr
 
     STAR  shift, and go to state 122
     DIV   shift, and go to state 123
     MOD   shift, and go to state 124
 
-    $default  reduce using rule 71 (AddExpr)
+    $default  reduce using rule 72 (AddExpr)
 
 
 State 82
 
-   75 MulExpr: UnaryExpr •
+   76 MulExpr: UnaryExpr •
 
-    $default  reduce using rule 75 (MulExpr)
+    $default  reduce using rule 76 (MulExpr)
 
 
 State 83
 
-   79 UnaryExpr: PostfixExpr •
+   80 UnaryExpr: PostfixExpr •
 
-    $default  reduce using rule 79 (UnaryExpr)
+    $default  reduce using rule 80 (UnaryExpr)
 
 
 State 84
 
    35 Statement: PRINT LPAR • Expr RPAR SEMICOLON
    36          | PRINT LPAR • STRLIT RPAR SEMICOLON
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
     STRLIT      shift, and go to state 125
-    BOOLLIT     shift, and go to state 70
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 126
     AssignExpr   go to state 73
@@ -1523,75 +1527,77 @@ State 84
 State 85
 
    47 ExprStmt: PARSEINT LPAR • IDENTIFIER LSQ Expr RSQ RPAR
+   48         | PARSEINT LPAR • error RPAR
 
-    IDENTIFIER  shift, and go to state 127
+    error       shift, and go to state 127
+    IDENTIFIER  shift, and go to state 128
 
 
 State 86
 
    44 ExprStmt: IDENTIFIER LPAR • ArgListOpt RPAR
    45         | IDENTIFIER LPAR • error RPAR
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
-   90 ArgListOpt: • ArgList
-   91           | ε •  [RPAR]
-   92 ArgList: • Expr
-   93        | • ArgList COMMA Expr
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+   91 ArgListOpt: • ArgList
+   92           | ε •  [RPAR]
+   93 ArgList: • Expr
+   94        | • ArgList COMMA Expr
 
-    error       shift, and go to state 128
+    error       shift, and go to state 129
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    RPAR  reduce using rule 91 (ArgListOpt)
+    RPAR  reduce using rule 92 (ArgListOpt)
 
-    Expr         go to state 129
+    Expr         go to state 130
     AssignExpr   go to state 73
     OrExpr       go to state 74
     AndExpr      go to state 75
@@ -1603,67 +1609,67 @@ State 86
     MulExpr      go to state 81
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
-    ArgListOpt   go to state 130
-    ArgList      go to state 131
+    ArgListOpt   go to state 131
+    ArgList      go to state 132
 
 
 State 87
 
    46 ExprStmt: IDENTIFIER ASSIGN • Expr
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    Expr         go to state 132
+    Expr         go to state 133
     AssignExpr   go to state 73
     OrExpr       go to state 74
     AndExpr      go to state 75
@@ -1689,8 +1695,8 @@ State 89
    11 IdentListVar: IdentListVar • COMMA IDENTIFIER
    28 VarDecl: Type IdentListVar • SEMICOLON
 
-    SEMICOLON  shift, and go to state 133
-    COMMA      shift, and go to state 134
+    SEMICOLON  shift, and go to state 134
+    COMMA      shift, and go to state 135
 
 
 State 90
@@ -1704,14 +1710,14 @@ State 91
 
    21 FormalParams: STRING LSQ RSQ • IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 135
+    IDENTIFIER  shift, and go to state 136
 
 
 State 92
 
    23 NormalParams: NormalParams COMMA Type • IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 136
+    IDENTIFIER  shift, and go to state 137
 
 
 State 93
@@ -1733,94 +1739,94 @@ State 95
    40 IfStmt: IF LPAR Expr • RPAR Statement ELSE Statement
    41       | IF LPAR Expr • RPAR Statement
 
-    RPAR  shift, and go to state 137
+    RPAR  shift, and go to state 138
 
 
 State 96
 
    32 Statement: WHILE LPAR Expr • RPAR Statement
 
-    RPAR  shift, and go to state 138
+    RPAR  shift, and go to state 139
 
 
 State 97
 
-   49 Expr: LPAR error • RPAR
-
-    RPAR  shift, and go to state 139
-
-
-State 98
-
-   85 PostfixExpr: LPAR Expr • RPAR
+   50 Expr: LPAR error • RPAR
 
     RPAR  shift, and go to state 140
 
 
+State 98
+
+   86 PostfixExpr: LPAR Expr • RPAR
+
+    RPAR  shift, and go to state 141
+
+
 State 99
 
-   83 PostfixExpr: PARSEINT LPAR • IDENTIFIER LSQ Expr RSQ RPAR
-   84            | PARSEINT LPAR • error RPAR
+   84 PostfixExpr: PARSEINT LPAR • IDENTIFIER LSQ Expr RSQ RPAR
+   85            | PARSEINT LPAR • error RPAR
 
-    error       shift, and go to state 141
-    IDENTIFIER  shift, and go to state 142
+    error       shift, and go to state 142
+    IDENTIFIER  shift, and go to state 143
 
 
 State 100
 
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   85            | LPAR • Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   86            | LPAR • Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 98
     AssignExpr   go to state 73
@@ -1838,103 +1844,89 @@ State 100
 
 State 101
 
-   80 PostfixExpr: IDENTIFIER • DOTLENGTH
-   81            | IDENTIFIER • LPAR ArgListOpt RPAR
-   82            | IDENTIFIER • LPAR error RPAR
-   86            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, STAR, DIV, MOD, XOR, EQ, NE]
+   81 PostfixExpr: IDENTIFIER • DOTLENGTH
+   82            | IDENTIFIER • LPAR ArgListOpt RPAR
+   83            | IDENTIFIER • LPAR error RPAR
+   87            | IDENTIFIER •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, STAR, DIV, MOD, XOR, EQ, NE, PLUS, MINUS]
 
-    LPAR       shift, and go to state 105
-    DOTLENGTH  shift, and go to state 106
+    LPAR       shift, and go to state 103
+    DOTLENGTH  shift, and go to state 104
 
-    $default  reduce using rule 86 (PostfixExpr)
+    $default  reduce using rule 87 (PostfixExpr)
 
 
 State 102
 
-   78 UnaryExpr: PLUS UnaryExpr •
+   78 UnaryExpr: NOT UnaryExpr •
 
     $default  reduce using rule 78 (UnaryExpr)
 
 
 State 103
 
-   76 UnaryExpr: MINUS UnaryExpr •
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   82            | IDENTIFIER LPAR • ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   83            | IDENTIFIER LPAR • error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+   91 ArgListOpt: • ArgList
+   92           | ε •  [RPAR]
+   93 ArgList: • Expr
+   94        | • ArgList COMMA Expr
 
-    $default  reduce using rule 76 (UnaryExpr)
-
-
-State 104
-
-   77 UnaryExpr: NOT UnaryExpr •
-
-    $default  reduce using rule 77 (UnaryExpr)
-
-
-State 105
-
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   81            | IDENTIFIER LPAR • ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   82            | IDENTIFIER LPAR • error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
-   90 ArgListOpt: • ArgList
-   91           | ε •  [RPAR]
-   92 ArgList: • Expr
-   93        | • ArgList COMMA Expr
-
-    error       shift, and go to state 143
+    error       shift, and go to state 144
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    RPAR  reduce using rule 91 (ArgListOpt)
+    RPAR  reduce using rule 92 (ArgListOpt)
 
-    Expr         go to state 129
+    Expr         go to state 130
     AssignExpr   go to state 73
     OrExpr       go to state 74
     AndExpr      go to state 75
@@ -1946,72 +1938,72 @@ State 105
     MulExpr      go to state 81
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
-    ArgListOpt   go to state 144
-    ArgList      go to state 131
+    ArgListOpt   go to state 145
+    ArgList      go to state 132
 
 
-State 106
+State 104
 
-   80 PostfixExpr: IDENTIFIER DOTLENGTH •
+   81 PostfixExpr: IDENTIFIER DOTLENGTH •
 
-    $default  reduce using rule 80 (PostfixExpr)
+    $default  reduce using rule 81 (PostfixExpr)
 
 
-State 107
+State 105
 
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   50           | IDENTIFIER ASSIGN • AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   51           | IDENTIFIER ASSIGN • AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    AssignExpr   go to state 145
+    AssignExpr   go to state 146
     OrExpr       go to state 74
     AndExpr      go to state 75
     XorExpr      go to state 76
@@ -2024,6 +2016,20 @@ State 107
     PostfixExpr  go to state 83
 
 
+State 106
+
+   79 UnaryExpr: PLUS UnaryExpr •
+
+    $default  reduce using rule 79 (UnaryExpr)
+
+
+State 107
+
+   77 UnaryExpr: MINUS UnaryExpr •
+
+    $default  reduce using rule 77 (UnaryExpr)
+
+
 State 108
 
    33 Statement: RETURN ExprOpt SEMICOLON •
@@ -2033,55 +2039,55 @@ State 108
 
 State 109
 
-   52 OrExpr: OrExpr OR • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   53 OrExpr: OrExpr OR • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    AndExpr      go to state 146
+    AndExpr      go to state 147
     XorExpr      go to state 76
     EqExpr       go to state 77
     RelExpr      go to state 78
@@ -2094,53 +2100,53 @@ State 109
 
 State 110
 
-   54 AndExpr: AndExpr AND • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   55 AndExpr: AndExpr AND • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    XorExpr      go to state 147
+    XorExpr      go to state 148
     EqExpr       go to state 77
     RelExpr      go to state 78
     ShiftExpr    go to state 79
@@ -2152,51 +2158,51 @@ State 110
 
 State 111
 
-   56 XorExpr: XorExpr XOR • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   57 XorExpr: XorExpr XOR • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    EqExpr       go to state 148
+    EqExpr       go to state 149
     RelExpr      go to state 78
     ShiftExpr    go to state 79
     AddExpr      go to state 80
@@ -2207,97 +2213,46 @@ State 111
 
 State 112
 
-   58 EqExpr: EqExpr EQ • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   59 EqExpr: EqExpr EQ • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
-
-    RelExpr      go to state 149
-    ShiftExpr    go to state 79
-    AddExpr      go to state 80
-    MulExpr      go to state 81
-    UnaryExpr    go to state 82
-    PostfixExpr  go to state 83
-
-
-State 113
-
-   59 EqExpr: EqExpr NE • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
-
-    LPAR        shift, and go to state 100
-    PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     RelExpr      go to state 150
     ShiftExpr    go to state 79
@@ -2307,88 +2262,94 @@ State 113
     PostfixExpr  go to state 83
 
 
-State 114
+State 113
 
-   61 RelExpr: RelExpr LT • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   60 EqExpr: EqExpr NE • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    ShiftExpr    go to state 151
+    RelExpr      go to state 151
+    ShiftExpr    go to state 79
     AddExpr      go to state 80
     MulExpr      go to state 81
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
 
 
-State 115
+State 114
 
-   62 RelExpr: RelExpr LE • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   62 RelExpr: RelExpr LT • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     ShiftExpr    go to state 152
     AddExpr      go to state 80
@@ -2397,43 +2358,43 @@ State 115
     PostfixExpr  go to state 83
 
 
-State 116
+State 115
 
-   63 RelExpr: RelExpr GT • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   63 RelExpr: RelExpr LE • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     ShiftExpr    go to state 153
     AddExpr      go to state 80
@@ -2442,43 +2403,43 @@ State 116
     PostfixExpr  go to state 83
 
 
-State 117
+State 116
 
-   64 RelExpr: RelExpr GE • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   64 RelExpr: RelExpr GT • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     ShiftExpr    go to state 154
     AddExpr      go to state 80
@@ -2487,81 +2448,85 @@ State 117
     PostfixExpr  go to state 83
 
 
-State 118
+State 117
 
-   66 ShiftExpr: ShiftExpr LSHIFT • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   65 RelExpr: RelExpr GE • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    AddExpr      go to state 155
+    ShiftExpr    go to state 155
+    AddExpr      go to state 80
     MulExpr      go to state 81
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
 
 
-State 119
+State 118
 
-   67 ShiftExpr: ShiftExpr RSHIFT • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   67 ShiftExpr: ShiftExpr LSHIFT • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     AddExpr      go to state 156
     MulExpr      go to state 81
@@ -2569,173 +2534,214 @@ State 119
     PostfixExpr  go to state 83
 
 
-State 120
+State 119
 
-   69 AddExpr: AddExpr PLUS • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   68 ShiftExpr: ShiftExpr RSHIFT • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    MulExpr      go to state 157
+    AddExpr      go to state 157
+    MulExpr      go to state 81
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
 
 
-State 121
+State 120
 
-   70 AddExpr: AddExpr MINUS • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   70 AddExpr: AddExpr PLUS • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     MulExpr      go to state 158
     UnaryExpr    go to state 82
     PostfixExpr  go to state 83
 
 
-State 122
+State 121
 
-   72 MulExpr: MulExpr STAR • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   71 AddExpr: AddExpr MINUS • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    UnaryExpr    go to state 159
+    MulExpr      go to state 159
+    UnaryExpr    go to state 82
     PostfixExpr  go to state 83
 
 
-State 123
+State 122
 
-   73 MulExpr: MulExpr DIV • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   73 MulExpr: MulExpr STAR • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     UnaryExpr    go to state 160
     PostfixExpr  go to state 83
 
 
-State 124
+State 123
 
-   74 MulExpr: MulExpr MOD • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   74 MulExpr: MulExpr DIV • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 100
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
+    NOT         shift, and go to state 64
     IDENTIFIER  shift, and go to state 101
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     UnaryExpr    go to state 161
+    PostfixExpr  go to state 83
+
+
+State 124
+
+   75 MulExpr: MulExpr MOD • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+
+    LPAR        shift, and go to state 100
+    PARSEINT    shift, and go to state 63
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 101
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
+
+    UnaryExpr    go to state 162
     PostfixExpr  go to state 83
 
 
@@ -2743,90 +2749,97 @@ State 125
 
    36 Statement: PRINT LPAR STRLIT • RPAR SEMICOLON
 
-    RPAR  shift, and go to state 162
+    RPAR  shift, and go to state 163
 
 
 State 126
 
    35 Statement: PRINT LPAR Expr • RPAR SEMICOLON
 
-    RPAR  shift, and go to state 163
+    RPAR  shift, and go to state 164
 
 
 State 127
 
-   47 ExprStmt: PARSEINT LPAR IDENTIFIER • LSQ Expr RSQ RPAR
-
-    LSQ  shift, and go to state 164
-
-
-State 128
-
-   45 ExprStmt: IDENTIFIER LPAR error • RPAR
+   48 ExprStmt: PARSEINT LPAR error • RPAR
 
     RPAR  shift, and go to state 165
 
 
+State 128
+
+   47 ExprStmt: PARSEINT LPAR IDENTIFIER • LSQ Expr RSQ RPAR
+
+    LSQ  shift, and go to state 166
+
+
 State 129
 
-   92 ArgList: Expr •
+   45 ExprStmt: IDENTIFIER LPAR error • RPAR
 
-    $default  reduce using rule 92 (ArgList)
+    RPAR  shift, and go to state 167
 
 
 State 130
 
-   44 ExprStmt: IDENTIFIER LPAR ArgListOpt • RPAR
+   93 ArgList: Expr •
 
-    RPAR  shift, and go to state 166
+    $default  reduce using rule 93 (ArgList)
 
 
 State 131
 
-   90 ArgListOpt: ArgList •  [RPAR]
-   93 ArgList: ArgList • COMMA Expr
+   44 ExprStmt: IDENTIFIER LPAR ArgListOpt • RPAR
 
-    COMMA  shift, and go to state 167
-
-    $default  reduce using rule 90 (ArgListOpt)
+    RPAR  shift, and go to state 168
 
 
 State 132
+
+   91 ArgListOpt: ArgList •  [RPAR]
+   94 ArgList: ArgList • COMMA Expr
+
+    COMMA  shift, and go to state 169
+
+    $default  reduce using rule 91 (ArgListOpt)
+
+
+State 133
 
    46 ExprStmt: IDENTIFIER ASSIGN Expr •
 
     $default  reduce using rule 46 (ExprStmt)
 
 
-State 133
+State 134
 
    28 VarDecl: Type IdentListVar SEMICOLON •
 
     $default  reduce using rule 28 (VarDecl)
 
 
-State 134
+State 135
 
    11 IdentListVar: IdentListVar COMMA • IDENTIFIER
 
-    IDENTIFIER  shift, and go to state 168
+    IDENTIFIER  shift, and go to state 170
 
 
-State 135
+State 136
 
    21 FormalParams: STRING LSQ RSQ IDENTIFIER •
 
     $default  reduce using rule 21 (FormalParams)
 
 
-State 136
+State 137
 
    23 NormalParams: NormalParams COMMA Type IDENTIFIER •
 
     $default  reduce using rule 23 (NormalParams)
 
 
-State 137
+State 138
 
    29 Statement: • LBRACE StmtList RBRACE
    30          | • IfStmt
@@ -2845,6 +2858,7 @@ State 137
    45         | • IDENTIFIER LPAR error RPAR
    46         | • IDENTIFIER ASSIGN Expr
    47         | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | • PARSEINT LPAR error RPAR
 
     error       shift, and go to state 38
     LBRACE      shift, and go to state 39
@@ -2856,12 +2870,12 @@ State 137
     PARSEINT    shift, and go to state 46
     IDENTIFIER  shift, and go to state 47
 
-    Statement  go to state 169
+    Statement  go to state 171
     IfStmt     go to state 51
     ExprStmt   go to state 52
 
 
-State 138
+State 139
 
    29 Statement: • LBRACE StmtList RBRACE
    30          | • IfStmt
@@ -2879,6 +2893,7 @@ State 138
    45         | • IDENTIFIER LPAR error RPAR
    46         | • IDENTIFIER ASSIGN Expr
    47         | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | • PARSEINT LPAR error RPAR
 
     error       shift, and go to state 38
     LBRACE      shift, and go to state 39
@@ -2890,115 +2905,99 @@ State 138
     PARSEINT    shift, and go to state 46
     IDENTIFIER  shift, and go to state 47
 
-    Statement  go to state 170
+    Statement  go to state 172
     IfStmt     go to state 51
     ExprStmt   go to state 52
 
 
-State 139
-
-   49 Expr: LPAR error RPAR •
-
-    $default  reduce using rule 49 (Expr)
-
-
 State 140
 
-   85 PostfixExpr: LPAR Expr RPAR •
+   50 Expr: LPAR error RPAR •
 
-    $default  reduce using rule 85 (PostfixExpr)
+    $default  reduce using rule 50 (Expr)
 
 
 State 141
 
-   84 PostfixExpr: PARSEINT LPAR error • RPAR
+   86 PostfixExpr: LPAR Expr RPAR •
 
-    RPAR  shift, and go to state 171
+    $default  reduce using rule 86 (PostfixExpr)
 
 
 State 142
 
-   83 PostfixExpr: PARSEINT LPAR IDENTIFIER • LSQ Expr RSQ RPAR
-
-    LSQ  shift, and go to state 172
-
-
-State 143
-
-   82 PostfixExpr: IDENTIFIER LPAR error • RPAR
+   85 PostfixExpr: PARSEINT LPAR error • RPAR
 
     RPAR  shift, and go to state 173
 
 
+State 143
+
+   84 PostfixExpr: PARSEINT LPAR IDENTIFIER • LSQ Expr RSQ RPAR
+
+    LSQ  shift, and go to state 174
+
+
 State 144
 
-   81 PostfixExpr: IDENTIFIER LPAR ArgListOpt • RPAR
+   83 PostfixExpr: IDENTIFIER LPAR error • RPAR
 
-    RPAR  shift, and go to state 174
+    RPAR  shift, and go to state 175
 
 
 State 145
 
-   50 AssignExpr: IDENTIFIER ASSIGN AssignExpr •
+   82 PostfixExpr: IDENTIFIER LPAR ArgListOpt • RPAR
 
-    $default  reduce using rule 50 (AssignExpr)
+    RPAR  shift, and go to state 176
 
 
 State 146
 
-   52 OrExpr: OrExpr OR AndExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR]
-   54 AndExpr: AndExpr • AND XorExpr
+   51 AssignExpr: IDENTIFIER ASSIGN AssignExpr •
 
-    AND  shift, and go to state 110
-
-    $default  reduce using rule 52 (OrExpr)
+    $default  reduce using rule 51 (AssignExpr)
 
 
 State 147
 
-   54 AndExpr: AndExpr AND XorExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND]
-   56 XorExpr: XorExpr • XOR EqExpr
+   53 OrExpr: OrExpr OR AndExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR]
+   55 AndExpr: AndExpr • AND XorExpr
 
-    XOR  shift, and go to state 111
+    AND  shift, and go to state 110
 
-    $default  reduce using rule 54 (AndExpr)
+    $default  reduce using rule 53 (OrExpr)
 
 
 State 148
 
-   56 XorExpr: XorExpr XOR EqExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR]
-   58 EqExpr: EqExpr • EQ RelExpr
-   59       | EqExpr • NE RelExpr
+   55 AndExpr: AndExpr AND XorExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND]
+   57 XorExpr: XorExpr • XOR EqExpr
 
-    EQ  shift, and go to state 112
-    NE  shift, and go to state 113
+    XOR  shift, and go to state 111
 
-    $default  reduce using rule 56 (XorExpr)
+    $default  reduce using rule 55 (AndExpr)
 
 
 State 149
 
-   58 EqExpr: EqExpr EQ RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
-   61 RelExpr: RelExpr • LT ShiftExpr
-   62        | RelExpr • LE ShiftExpr
-   63        | RelExpr • GT ShiftExpr
-   64        | RelExpr • GE ShiftExpr
+   57 XorExpr: XorExpr XOR EqExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR]
+   59 EqExpr: EqExpr • EQ RelExpr
+   60       | EqExpr • NE RelExpr
 
-    LT  shift, and go to state 114
-    LE  shift, and go to state 115
-    GT  shift, and go to state 116
-    GE  shift, and go to state 117
+    EQ  shift, and go to state 112
+    NE  shift, and go to state 113
 
-    $default  reduce using rule 58 (EqExpr)
+    $default  reduce using rule 57 (XorExpr)
 
 
 State 150
 
-   59 EqExpr: EqExpr NE RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
-   61 RelExpr: RelExpr • LT ShiftExpr
-   62        | RelExpr • LE ShiftExpr
-   63        | RelExpr • GT ShiftExpr
-   64        | RelExpr • GE ShiftExpr
+   59 EqExpr: EqExpr EQ RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   62 RelExpr: RelExpr • LT ShiftExpr
+   63        | RelExpr • LE ShiftExpr
+   64        | RelExpr • GT ShiftExpr
+   65        | RelExpr • GE ShiftExpr
 
     LT  shift, and go to state 114
     LE  shift, and go to state 115
@@ -3010,21 +3009,25 @@ State 150
 
 State 151
 
-   61 RelExpr: RelExpr LT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
-   66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
-   67          | ShiftExpr • RSHIFT AddExpr
+   60 EqExpr: EqExpr NE RelExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, XOR, EQ, NE]
+   62 RelExpr: RelExpr • LT ShiftExpr
+   63        | RelExpr • LE ShiftExpr
+   64        | RelExpr • GT ShiftExpr
+   65        | RelExpr • GE ShiftExpr
 
-    LSHIFT  shift, and go to state 118
-    RSHIFT  shift, and go to state 119
+    LT  shift, and go to state 114
+    LE  shift, and go to state 115
+    GT  shift, and go to state 116
+    GE  shift, and go to state 117
 
-    $default  reduce using rule 61 (RelExpr)
+    $default  reduce using rule 60 (EqExpr)
 
 
 State 152
 
-   62 RelExpr: RelExpr LE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
-   66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
-   67          | ShiftExpr • RSHIFT AddExpr
+   62 RelExpr: RelExpr LT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
+   67 ShiftExpr: ShiftExpr • LSHIFT AddExpr
+   68          | ShiftExpr • RSHIFT AddExpr
 
     LSHIFT  shift, and go to state 118
     RSHIFT  shift, and go to state 119
@@ -3034,9 +3037,9 @@ State 152
 
 State 153
 
-   63 RelExpr: RelExpr GT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
-   66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
-   67          | ShiftExpr • RSHIFT AddExpr
+   63 RelExpr: RelExpr LE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
+   67 ShiftExpr: ShiftExpr • LSHIFT AddExpr
+   68          | ShiftExpr • RSHIFT AddExpr
 
     LSHIFT  shift, and go to state 118
     RSHIFT  shift, and go to state 119
@@ -3046,9 +3049,9 @@ State 153
 
 State 154
 
-   64 RelExpr: RelExpr GE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
-   66 ShiftExpr: ShiftExpr • LSHIFT AddExpr
-   67          | ShiftExpr • RSHIFT AddExpr
+   64 RelExpr: RelExpr GT ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
+   67 ShiftExpr: ShiftExpr • LSHIFT AddExpr
+   68          | ShiftExpr • RSHIFT AddExpr
 
     LSHIFT  shift, and go to state 118
     RSHIFT  shift, and go to state 119
@@ -3058,21 +3061,21 @@ State 154
 
 State 155
 
-   66 ShiftExpr: ShiftExpr LSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
-   69 AddExpr: AddExpr • PLUS MulExpr
-   70        | AddExpr • MINUS MulExpr
+   65 RelExpr: RelExpr GE ShiftExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, XOR, EQ, NE]
+   67 ShiftExpr: ShiftExpr • LSHIFT AddExpr
+   68          | ShiftExpr • RSHIFT AddExpr
 
-    PLUS   shift, and go to state 120
-    MINUS  shift, and go to state 121
+    LSHIFT  shift, and go to state 118
+    RSHIFT  shift, and go to state 119
 
-    $default  reduce using rule 66 (ShiftExpr)
+    $default  reduce using rule 65 (RelExpr)
 
 
 State 156
 
-   67 ShiftExpr: ShiftExpr RSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
-   69 AddExpr: AddExpr • PLUS MulExpr
-   70        | AddExpr • MINUS MulExpr
+   67 ShiftExpr: ShiftExpr LSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
+   70 AddExpr: AddExpr • PLUS MulExpr
+   71        | AddExpr • MINUS MulExpr
 
     PLUS   shift, and go to state 120
     MINUS  shift, and go to state 121
@@ -3082,24 +3085,22 @@ State 156
 
 State 157
 
-   69 AddExpr: AddExpr PLUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR, EQ, NE]
-   72 MulExpr: MulExpr • STAR UnaryExpr
-   73        | MulExpr • DIV UnaryExpr
-   74        | MulExpr • MOD UnaryExpr
+   68 ShiftExpr: ShiftExpr RSHIFT AddExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE]
+   70 AddExpr: AddExpr • PLUS MulExpr
+   71        | AddExpr • MINUS MulExpr
 
-    STAR  shift, and go to state 122
-    DIV   shift, and go to state 123
-    MOD   shift, and go to state 124
+    PLUS   shift, and go to state 120
+    MINUS  shift, and go to state 121
 
-    $default  reduce using rule 69 (AddExpr)
+    $default  reduce using rule 68 (ShiftExpr)
 
 
 State 158
 
-   70 AddExpr: AddExpr MINUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, PLUS, MINUS, XOR, EQ, NE]
-   72 MulExpr: MulExpr • STAR UnaryExpr
-   73        | MulExpr • DIV UnaryExpr
-   74        | MulExpr • MOD UnaryExpr
+   70 AddExpr: AddExpr PLUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE, PLUS, MINUS]
+   73 MulExpr: MulExpr • STAR UnaryExpr
+   74        | MulExpr • DIV UnaryExpr
+   75        | MulExpr • MOD UnaryExpr
 
     STAR  shift, and go to state 122
     DIV   shift, and go to state 123
@@ -3110,96 +3111,117 @@ State 158
 
 State 159
 
-   72 MulExpr: MulExpr STAR UnaryExpr •
+   71 AddExpr: AddExpr MINUS MulExpr •  [SEMICOLON, COMMA, RPAR, RSQ, OR, AND, LT, LE, GT, GE, LSHIFT, RSHIFT, XOR, EQ, NE, PLUS, MINUS]
+   73 MulExpr: MulExpr • STAR UnaryExpr
+   74        | MulExpr • DIV UnaryExpr
+   75        | MulExpr • MOD UnaryExpr
 
-    $default  reduce using rule 72 (MulExpr)
+    STAR  shift, and go to state 122
+    DIV   shift, and go to state 123
+    MOD   shift, and go to state 124
+
+    $default  reduce using rule 71 (AddExpr)
 
 
 State 160
 
-   73 MulExpr: MulExpr DIV UnaryExpr •
+   73 MulExpr: MulExpr STAR UnaryExpr •
 
     $default  reduce using rule 73 (MulExpr)
 
 
 State 161
 
-   74 MulExpr: MulExpr MOD UnaryExpr •
+   74 MulExpr: MulExpr DIV UnaryExpr •
 
     $default  reduce using rule 74 (MulExpr)
 
 
 State 162
 
-   36 Statement: PRINT LPAR STRLIT RPAR • SEMICOLON
+   75 MulExpr: MulExpr MOD UnaryExpr •
 
-    SEMICOLON  shift, and go to state 175
+    $default  reduce using rule 75 (MulExpr)
 
 
 State 163
 
-   35 Statement: PRINT LPAR Expr RPAR • SEMICOLON
+   36 Statement: PRINT LPAR STRLIT RPAR • SEMICOLON
 
-    SEMICOLON  shift, and go to state 176
+    SEMICOLON  shift, and go to state 177
 
 
 State 164
 
+   35 Statement: PRINT LPAR Expr RPAR • SEMICOLON
+
+    SEMICOLON  shift, and go to state 178
+
+
+State 165
+
+   48 ExprStmt: PARSEINT LPAR error RPAR •
+
+    $default  reduce using rule 48 (ExprStmt)
+
+
+State 166
+
    47 ExprStmt: PARSEINT LPAR IDENTIFIER LSQ • Expr RSQ RPAR
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
-    Expr         go to state 177
+    Expr         go to state 179
     AssignExpr   go to state 73
     OrExpr       go to state 74
     AndExpr      go to state 75
@@ -3213,178 +3235,75 @@ State 164
     PostfixExpr  go to state 83
 
 
-State 165
+State 167
 
    45 ExprStmt: IDENTIFIER LPAR error RPAR •
 
     $default  reduce using rule 45 (ExprStmt)
 
 
-State 166
+State 168
 
    44 ExprStmt: IDENTIFIER LPAR ArgListOpt RPAR •
 
     $default  reduce using rule 44 (ExprStmt)
 
 
-State 167
-
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
-   93 ArgList: ArgList COMMA • Expr
-
-    LPAR        shift, and go to state 62
-    PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
-
-    Expr         go to state 178
-    AssignExpr   go to state 73
-    OrExpr       go to state 74
-    AndExpr      go to state 75
-    XorExpr      go to state 76
-    EqExpr       go to state 77
-    RelExpr      go to state 78
-    ShiftExpr    go to state 79
-    AddExpr      go to state 80
-    MulExpr      go to state 81
-    UnaryExpr    go to state 82
-    PostfixExpr  go to state 83
-
-
-State 168
-
-   11 IdentListVar: IdentListVar COMMA IDENTIFIER •
-
-    $default  reduce using rule 11 (IdentListVar)
-
-
 State 169
 
-   40 IfStmt: IF LPAR Expr RPAR Statement • ELSE Statement
-   41       | IF LPAR Expr RPAR Statement •  [error, LBRACE, RBRACE, SEMICOLON, BOOL, INT, IF, WHILE, RETURN, PRINT, PARSEINT, IDENTIFIER, DOUBLE]
-
-    ELSE  shift, and go to state 179
-
-    $default  reduce using rule 41 (IfStmt)
-
-    Conflict between rule 41 and token ELSE resolved as shift (WITHOUT_ELSE < ELSE).
-
-
-State 170
-
-   32 Statement: WHILE LPAR Expr RPAR Statement •
-
-    $default  reduce using rule 32 (Statement)
-
-
-State 171
-
-   84 PostfixExpr: PARSEINT LPAR error RPAR •
-
-    $default  reduce using rule 84 (PostfixExpr)
-
-
-State 172
-
-   48 Expr: • AssignExpr
-   49     | • LPAR error RPAR
-   50 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
-   51           | • OrExpr
-   52 OrExpr: • OrExpr OR AndExpr
-   53       | • AndExpr
-   54 AndExpr: • AndExpr AND XorExpr
-   55        | • XorExpr
-   56 XorExpr: • XorExpr XOR EqExpr
-   57        | • EqExpr
-   58 EqExpr: • EqExpr EQ RelExpr
-   59       | • EqExpr NE RelExpr
-   60       | • RelExpr
-   61 RelExpr: • RelExpr LT ShiftExpr
-   62        | • RelExpr LE ShiftExpr
-   63        | • RelExpr GT ShiftExpr
-   64        | • RelExpr GE ShiftExpr
-   65        | • ShiftExpr
-   66 ShiftExpr: • ShiftExpr LSHIFT AddExpr
-   67          | • ShiftExpr RSHIFT AddExpr
-   68          | • AddExpr
-   69 AddExpr: • AddExpr PLUS MulExpr
-   70        | • AddExpr MINUS MulExpr
-   71        | • MulExpr
-   72 MulExpr: • MulExpr STAR UnaryExpr
-   73        | • MulExpr DIV UnaryExpr
-   74        | • MulExpr MOD UnaryExpr
-   75        | • UnaryExpr
-   76 UnaryExpr: • MINUS UnaryExpr
-   77          | • NOT UnaryExpr
-   78          | • PLUS UnaryExpr
-   79          | • PostfixExpr
-   80 PostfixExpr: • IDENTIFIER DOTLENGTH
-   81            | • IDENTIFIER LPAR ArgListOpt RPAR
-   82            | • IDENTIFIER LPAR error RPAR
-   83            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
-   83            | PARSEINT LPAR IDENTIFIER LSQ • Expr RSQ RPAR
-   84            | • PARSEINT LPAR error RPAR
-   85            | • LPAR Expr RPAR
-   86            | • IDENTIFIER
-   87            | • NATURAL
-   88            | • DECIMAL
-   89            | • BOOLLIT
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
+   94 ArgList: ArgList COMMA • Expr
 
     LPAR        shift, and go to state 62
     PARSEINT    shift, and go to state 63
-    PLUS        shift, and go to state 64
-    MINUS       shift, and go to state 65
-    NOT         shift, and go to state 66
-    IDENTIFIER  shift, and go to state 67
-    NATURAL     shift, and go to state 68
-    DECIMAL     shift, and go to state 69
-    BOOLLIT     shift, and go to state 70
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
 
     Expr         go to state 180
     AssignExpr   go to state 73
@@ -3400,49 +3319,152 @@ State 172
     PostfixExpr  go to state 83
 
 
+State 170
+
+   11 IdentListVar: IdentListVar COMMA IDENTIFIER •
+
+    $default  reduce using rule 11 (IdentListVar)
+
+
+State 171
+
+   40 IfStmt: IF LPAR Expr RPAR Statement • ELSE Statement
+   41       | IF LPAR Expr RPAR Statement •  [error, LBRACE, RBRACE, SEMICOLON, BOOL, INT, IF, WHILE, RETURN, PRINT, PARSEINT, IDENTIFIER, DOUBLE]
+
+    ELSE  shift, and go to state 181
+
+    $default  reduce using rule 41 (IfStmt)
+
+    Conflict between rule 41 and token ELSE resolved as shift (WITHOUT_ELSE < ELSE).
+
+
+State 172
+
+   32 Statement: WHILE LPAR Expr RPAR Statement •
+
+    $default  reduce using rule 32 (Statement)
+
+
 State 173
 
-   82 PostfixExpr: IDENTIFIER LPAR error RPAR •
+   85 PostfixExpr: PARSEINT LPAR error RPAR •
 
-    $default  reduce using rule 82 (PostfixExpr)
+    $default  reduce using rule 85 (PostfixExpr)
 
 
 State 174
 
-   81 PostfixExpr: IDENTIFIER LPAR ArgListOpt RPAR •
+   49 Expr: • AssignExpr
+   50     | • LPAR error RPAR
+   51 AssignExpr: • IDENTIFIER ASSIGN AssignExpr
+   52           | • OrExpr
+   53 OrExpr: • OrExpr OR AndExpr
+   54       | • AndExpr
+   55 AndExpr: • AndExpr AND XorExpr
+   56        | • XorExpr
+   57 XorExpr: • XorExpr XOR EqExpr
+   58        | • EqExpr
+   59 EqExpr: • EqExpr EQ RelExpr
+   60       | • EqExpr NE RelExpr
+   61       | • RelExpr
+   62 RelExpr: • RelExpr LT ShiftExpr
+   63        | • RelExpr LE ShiftExpr
+   64        | • RelExpr GT ShiftExpr
+   65        | • RelExpr GE ShiftExpr
+   66        | • ShiftExpr
+   67 ShiftExpr: • ShiftExpr LSHIFT AddExpr
+   68          | • ShiftExpr RSHIFT AddExpr
+   69          | • AddExpr
+   70 AddExpr: • AddExpr PLUS MulExpr
+   71        | • AddExpr MINUS MulExpr
+   72        | • MulExpr
+   73 MulExpr: • MulExpr STAR UnaryExpr
+   74        | • MulExpr DIV UnaryExpr
+   75        | • MulExpr MOD UnaryExpr
+   76        | • UnaryExpr
+   77 UnaryExpr: • MINUS UnaryExpr
+   78          | • NOT UnaryExpr
+   79          | • PLUS UnaryExpr
+   80          | • PostfixExpr
+   81 PostfixExpr: • IDENTIFIER DOTLENGTH
+   82            | • IDENTIFIER LPAR ArgListOpt RPAR
+   83            | • IDENTIFIER LPAR error RPAR
+   84            | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   84            | PARSEINT LPAR IDENTIFIER LSQ • Expr RSQ RPAR
+   85            | • PARSEINT LPAR error RPAR
+   86            | • LPAR Expr RPAR
+   87            | • IDENTIFIER
+   88            | • NATURAL
+   89            | • DECIMAL
+   90            | • BOOLLIT
 
-    $default  reduce using rule 81 (PostfixExpr)
+    LPAR        shift, and go to state 62
+    PARSEINT    shift, and go to state 63
+    NOT         shift, and go to state 64
+    IDENTIFIER  shift, and go to state 65
+    NATURAL     shift, and go to state 66
+    DECIMAL     shift, and go to state 67
+    BOOLLIT     shift, and go to state 68
+    PLUS        shift, and go to state 69
+    MINUS       shift, and go to state 70
+
+    Expr         go to state 182
+    AssignExpr   go to state 73
+    OrExpr       go to state 74
+    AndExpr      go to state 75
+    XorExpr      go to state 76
+    EqExpr       go to state 77
+    RelExpr      go to state 78
+    ShiftExpr    go to state 79
+    AddExpr      go to state 80
+    MulExpr      go to state 81
+    UnaryExpr    go to state 82
+    PostfixExpr  go to state 83
 
 
 State 175
+
+   83 PostfixExpr: IDENTIFIER LPAR error RPAR •
+
+    $default  reduce using rule 83 (PostfixExpr)
+
+
+State 176
+
+   82 PostfixExpr: IDENTIFIER LPAR ArgListOpt RPAR •
+
+    $default  reduce using rule 82 (PostfixExpr)
+
+
+State 177
 
    36 Statement: PRINT LPAR STRLIT RPAR SEMICOLON •
 
     $default  reduce using rule 36 (Statement)
 
 
-State 176
+State 178
 
    35 Statement: PRINT LPAR Expr RPAR SEMICOLON •
 
     $default  reduce using rule 35 (Statement)
 
 
-State 177
+State 179
 
    47 ExprStmt: PARSEINT LPAR IDENTIFIER LSQ Expr • RSQ RPAR
 
-    RSQ  shift, and go to state 181
+    RSQ  shift, and go to state 183
 
 
-State 178
+State 180
 
-   93 ArgList: ArgList COMMA Expr •
+   94 ArgList: ArgList COMMA Expr •
 
-    $default  reduce using rule 93 (ArgList)
+    $default  reduce using rule 94 (ArgList)
 
 
-State 179
+State 181
 
    29 Statement: • LBRACE StmtList RBRACE
    30          | • IfStmt
@@ -3460,6 +3482,7 @@ State 179
    45         | • IDENTIFIER LPAR error RPAR
    46         | • IDENTIFIER ASSIGN Expr
    47         | • PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR
+   48         | • PARSEINT LPAR error RPAR
 
     error       shift, and go to state 38
     LBRACE      shift, and go to state 39
@@ -3471,48 +3494,48 @@ State 179
     PARSEINT    shift, and go to state 46
     IDENTIFIER  shift, and go to state 47
 
-    Statement  go to state 182
+    Statement  go to state 184
     IfStmt     go to state 51
     ExprStmt   go to state 52
 
 
-State 180
+State 182
 
-   83 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr • RSQ RPAR
+   84 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr • RSQ RPAR
 
-    RSQ  shift, and go to state 183
+    RSQ  shift, and go to state 185
 
 
-State 181
+State 183
 
    47 ExprStmt: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ • RPAR
 
-    RPAR  shift, and go to state 184
+    RPAR  shift, and go to state 186
 
 
-State 182
+State 184
 
    40 IfStmt: IF LPAR Expr RPAR Statement ELSE Statement •
 
     $default  reduce using rule 40 (IfStmt)
 
 
-State 183
+State 185
 
-   83 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ • RPAR
+   84 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ • RPAR
 
-    RPAR  shift, and go to state 185
+    RPAR  shift, and go to state 187
 
 
-State 184
+State 186
 
    47 ExprStmt: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR •
 
     $default  reduce using rule 47 (ExprStmt)
 
 
-State 185
+State 187
 
-   83 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR •
+   84 PostfixExpr: PARSEINT LPAR IDENTIFIER LSQ Expr RSQ RPAR •
 
-    $default  reduce using rule 83 (PostfixExpr)
+    $default  reduce using rule 84 (PostfixExpr)

@@ -76,6 +76,7 @@ sem_type check_calls(struct node *call) {
         struct node_list *a = args_node->children;
         while (a != NULL) {
             arg_types[n_args++] = check_expression(a->node);
+            //if(arg_types[n_args - 1] == TYPE_DOUBLE ) printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
             if (n_args > 1) strcat(call_args, ",");
             strcat(call_args, type_name(arg_types[n_args - 1]));
             a = a->next;
@@ -167,13 +168,12 @@ sem_type check_calls(struct node *call) {
     if (n_compat >= 1) {
         printf("Line %d, col %d: Reference to method %s%s is ambiguous\n",
                id_node->line, id_node->column, call_id, call_args);
-        semantic_errors++;
               
     } else {
         //printf("Nao encontro no check_calls\n");
         printf("Line %d, col %d: Cannot find symbol %s%s\n",
                id_node->line, id_node->column, call_id, call_args);
-        semantic_errors++;   
+             
     }
     call->type = TYPE_UNDEF;
     id_node->type = TYPE_UNDEF;
@@ -202,7 +202,7 @@ struct symbol_list *check_parameters(struct node *MethodParams, struct symbol_li
         if (ID_node->token != NULL && (strcmp(ID_node->token, "_") == 0) ) { // Caso especial ja resolvido no pre_check
                 /*printf("Line %d, col %d: Symbol %s is reserved\n",
                        ID_node->line, ID_node->column, ID_node->token);*/
-                 //semantic_errors++;
+                 semantic_errors++;
                 children_atual = children_atual->next;
                 continue;
         }
@@ -213,7 +213,7 @@ struct symbol_list *check_parameters(struct node *MethodParams, struct symbol_li
             // Ja feito no pre-check
           /* printf("Line %d, col %d: Symbol %s already defined\n",
                        ID_node->line, ID_node->column, ID_node->token);*/
-                //semantic_errors++;
+                semantic_errors++;
         }
 
         children_atual = children_atual->next;
@@ -400,7 +400,6 @@ sem_type check_expression(struct node *n) {
                        n->line, n->column, n->token);
                 result =  TYPE_UNDEF;
                 n->type = result;
-                semantic_errors++;
                 break;
             }
 
@@ -412,7 +411,6 @@ sem_type check_expression(struct node *n) {
             if (sym == NULL) {
                 printf("Line %d, col %d: Cannot find symbol %s\n",
                        n->line, n->column, n->token);
-                semantic_errors++;
                 result = TYPE_UNDEF;
             } else {
                 //printf("%s\n", sym->identifier);
@@ -439,7 +437,6 @@ sem_type check_expression(struct node *n) {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                     n->line, n->column, op_name(n->category),
                     type_name(lt), type_name(rt));
-                semantic_errors++;
                 result = lt;
                 break;
             }
@@ -451,7 +448,6 @@ sem_type check_expression(struct node *n) {
                 printf("Line %d, col %d: Operator = cannot be applied to types %s, %s\n",
                     n->line, n->column, type_name(lt), type_name(rt));
                 result = lt;
-                semantic_errors++;
             }
             n->type = result;
             break;
@@ -472,7 +468,6 @@ sem_type check_expression(struct node *n) {
                            n->line, n->column, op_name(n->category),type_name(lt),
                            type_name(rt));
                 result = TYPE_UNDEF;
-                semantic_errors++;
             }
             n->type = result;
             break;
@@ -517,7 +512,6 @@ sem_type check_expression(struct node *n) {
                        n->line, n->column, op_name(n->category),
                        type_name(lt), type_name(rt));
                 result = TYPE_BOOL;
-                semantic_errors++;
                 //if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) { result = TYPE_UNDEF; } // Pode ser uma solucao para os outros
             }
             n->type = result;
@@ -542,7 +536,6 @@ sem_type check_expression(struct node *n) {
                 printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                     n->line, n->column, n->token,
                     type_name(lt), type_name(rt));
-                semantic_errors++;
             }
             result = TYPE_BOOL;
             n->type = result;
@@ -565,7 +558,7 @@ sem_type check_expression(struct node *n) {
                        type_name(lt), type_name(rt));
                 result = TYPE_BOOL; //Forçado
                 //if (lt == TYPE_UNDEF || rt == TYPE_UNDEF) { result = TYPE_UNDEF; } // Pode ser uma solucao para os outros
-                semantic_errors++;
+
             }
             n->type = result;
             break;
@@ -584,7 +577,6 @@ sem_type check_expression(struct node *n) {
                 printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
                        n->line, n->column, n->token, type_name(t));
                 result = TYPE_UNDEF;
-                semantic_errors++;
             }
             n->type = result;
             break;
@@ -602,7 +594,6 @@ sem_type check_expression(struct node *n) {
                 printf("Line %d, col %d: Operator ! cannot be applied to type %s\n",
                        n->line, n->column, type_name(t));
                 result = TYPE_BOOL; // Forçado
-                semantic_errors++;
             }
             n->type = result;
             break;
@@ -619,7 +610,6 @@ sem_type check_expression(struct node *n) {
             if(id_node->type != TYPE_STRING_ARRAY){
                 printf("Line %d, col %d: Operator .length cannot be applied to type %s\n", 
                 n->line , n->column, type_name(id_node->type));
-                semantic_errors++;
             }
             result = TYPE_INT; // Forçado 
             n->type = result;
@@ -635,11 +625,9 @@ sem_type check_expression(struct node *n) {
             id_node->type = check_expression(id_node);
             idx_node->type = check_expression(idx_node); 
             
-            if(idx_node->type != TYPE_INT || id_node->type != TYPE_STRING_ARRAY ){
+            if(idx_node->type != TYPE_INT || id_node->type != TYPE_STRING_ARRAY )
                 printf("Line %d, col %d: Operator Integer.parseInt cannot be applied to types %s, %s\n", 
                 n->line, n->column, type_name(id_node->type), type_name(idx_node->type));
-                semantic_errors++;
-            }
 
             result = TYPE_INT;
             n->type = result;
@@ -720,7 +708,6 @@ int pre_check_MethodHead(struct node *head) {
     if (res == NULL) {
         printf("Line %d, col %d: Symbol %s%s already defined\n",
                idNode->line, idNode->column, idNode->token, args_str);
-        semantic_errors++;
         head->visit = 0;
         return 0;
     }
@@ -970,7 +957,6 @@ void check_MethodBody(struct node *body) {
             if (strcmp(id_node->token, "_") == 0 ) {
                 printf("Line %d, col %d: Symbol %s is reserved\n",
                        id_node->line, id_node->column, id_node->token);
-                semantic_errors++;
                 id_node->varDecl  = 1;
                 child = child->next;
                 continue;
@@ -1042,7 +1028,6 @@ int check_program(struct node *program) {
                 if (id_node->token != NULL && (strcmp(id_node->token, "_") == 0  ) ) { // Caso especial 
                     printf("Line %d, col %d: Symbol %s is reserved\n",
                            id_node->line, id_node->column, id_node->token);
-                    semantic_errors++;       
                     child = child->next;
                     continue;
                 }

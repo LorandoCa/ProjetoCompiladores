@@ -85,23 +85,23 @@ extern int yydebug;
     GE = 286,                      /* GE  */
     LSHIFT = 287,                  /* LSHIFT  */
     RSHIFT = 288,                  /* RSHIFT  */
-    PLUS = 289,                    /* PLUS  */
-    MINUS = 290,                   /* MINUS  */
-    STAR = 291,                    /* STAR  */
-    DIV = 292,                     /* DIV  */
-    MOD = 293,                     /* MOD  */
-    NOT = 294,                     /* NOT  */
-    RESERVED = 295,                /* RESERVED  */
-    IDENTIFIER = 296,              /* IDENTIFIER  */
-    NATURAL = 297,                 /* NATURAL  */
-    DECIMAL = 298,                 /* DECIMAL  */
-    INTEGER = 299,                 /* INTEGER  */
-    DOUBLE = 300,                  /* DOUBLE  */
-    STRLIT = 301,                  /* STRLIT  */
-    BOOLLIT = 302,                 /* BOOLLIT  */
-    XOR = 303,                     /* XOR  */
-    EQ = 304,                      /* EQ  */
-    NE = 305,                      /* NE  */
+    STAR = 289,                    /* STAR  */
+    DIV = 290,                     /* DIV  */
+    MOD = 291,                     /* MOD  */
+    NOT = 292,                     /* NOT  */
+    RESERVED = 293,                /* RESERVED  */
+    IDENTIFIER = 294,              /* IDENTIFIER  */
+    NATURAL = 295,                 /* NATURAL  */
+    DECIMAL = 296,                 /* DECIMAL  */
+    INTEGER = 297,                 /* INTEGER  */
+    DOUBLE = 298,                  /* DOUBLE  */
+    STRLIT = 299,                  /* STRLIT  */
+    BOOLLIT = 300,                 /* BOOLLIT  */
+    XOR = 301,                     /* XOR  */
+    EQ = 302,                      /* EQ  */
+    NE = 303,                      /* NE  */
+    PLUS = 304,                    /* PLUS  */
+    MINUS = 305,                   /* MINUS  */
     WITHOUT_ELSE = 306             /* WITHOUT_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -142,23 +142,23 @@ extern int yydebug;
 #define GE 286
 #define LSHIFT 287
 #define RSHIFT 288
-#define PLUS 289
-#define MINUS 290
-#define STAR 291
-#define DIV 292
-#define MOD 293
-#define NOT 294
-#define RESERVED 295
-#define IDENTIFIER 296
-#define NATURAL 297
-#define DECIMAL 298
-#define INTEGER 299
-#define DOUBLE 300
-#define STRLIT 301
-#define BOOLLIT 302
-#define XOR 303
-#define EQ 304
-#define NE 305
+#define STAR 289
+#define DIV 290
+#define MOD 291
+#define NOT 292
+#define RESERVED 293
+#define IDENTIFIER 294
+#define NATURAL 295
+#define DECIMAL 296
+#define INTEGER 297
+#define DOUBLE 298
+#define STRLIT 299
+#define BOOLLIT 300
+#define XOR 301
+#define EQ 302
+#define NE 303
+#define PLUS 304
+#define MINUS 305
 #define WITHOUT_ELSE 306
 
 /* Value type.  */
